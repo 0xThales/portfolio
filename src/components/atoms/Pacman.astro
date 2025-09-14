@@ -4,3 +4,12 @@
     >
     <span id="pacman-text" class="opacity-0 rotate-45 font-family-vt323 group-hover:opacity-100 absolute -right-20 text-primary-black text-body-l duration-200">Click me pls</span>
 </button>
+
+<script>
+    import { gameOn } from '../../store'
+    
+    const clickMeText = document.getElementById('pacman-text')
+    clickMeText?.addEventListener('click', () => {
+        gameOn.set(true)
+    })
+</script>
