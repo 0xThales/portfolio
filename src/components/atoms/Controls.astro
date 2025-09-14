@@ -1,1 +1,19 @@
-<div id="controls"></div>
+---
+import Image from "astro/components/Image.astro";
+import controlsImage from "../../assets/keys.png";
+---
+
+<div id="controls" class="flex flex-col items-center justify-center fixed top-10 left-10">
+    <Image class="w-[150px] aspect-square" src={controlsImage} alt="Controls" width={1024} height={1024} quality={10} />
+    <p class="text-body-m font-family-vt323">Use wasd keys to move</p>
+    <p class="text-body-m font-family-vt323">And <span class="border p-1">esc</span> to quit</p>
+</div>
+
+<script>
+    import { gameOn } from '../../store'
+
+    const controls = document.getElementById('controls')
+    gameOn.subscribe(value => {
+        controls?.classList.toggle('hidden', !value)
+    })
+</script>

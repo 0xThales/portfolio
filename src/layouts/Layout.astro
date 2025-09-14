@@ -11,9 +11,9 @@ import "../styles/global.css";
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
-		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+		<link rel="icon" type="image/x-icon" href={`${import.meta.env.BASE_URL}favicon.ico`} />
+		<link rel="icon" type="image/png" sizes="32x32" href={`${import.meta.env.BASE_URL}favicon-32x32.png`} />
+		<link rel="icon" type="image/png" sizes="16x16" href={`${import.meta.env.BASE_URL}favicon-16x16.png`} />
 		<meta name="generator" content={Astro.generator} />
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,7 +34,7 @@ import "../styles/global.css";
 </html>
 
 <script>
-	import {isMaximized, pageIndex, sectionCount} from '../store.ts'
+	import {isMaximized, pageIndex, sectionCount, gameOn} from '../store.ts'
 	const mainFrame = document.getElementById('main-frame') 
 	const mainFrameContent = document.getElementById('main-frame-content')
 	isMaximized.subscribe(value => {
@@ -45,9 +45,21 @@ import "../styles/global.css";
 	document.addEventListener('keydown', (e) => {
 		const keys = {
 			'f': () => isMaximized.set(!isMaximized.get()),
-			'Escape': () => isMaximized.set(false),
-			'ArrowRight':  () => {if(pageIndex.get() < sectionCount.get() - 1) pageIndex.set(pageIndex.get() + 1)},
-			'ArrowLeft':  () => {if(pageIndex.get() > 0) pageIndex.set(pageIndex.get() + -1)}
+			'Escape': () => {
+				if(isMaximized.get()) {
+					isMaximized.set(false)
+					return
+				}
+				if(gameOn.get()) gameOn.set(false)
+			},
+			'ArrowRight':  () => {
+				if(pageIndex.get() < sectionCount.get() - 1) pageIndex.set(pageIndex.get() + 1)
+				if(gameOn.get()) gameOn.set(false)
+			},
+			'ArrowLeft':  () => {
+				if(pageIndex.get() > 0) pageIndex.set(pageIndex.get() + -1)
+				if(gameOn.get()) gameOn.set(false)
+			}
 		}
 
 		const {key} = e

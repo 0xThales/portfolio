@@ -1,15 +1,295 @@
-<button 
-    id="pacman" 
-    class="group block w-[120px] h-[120px] rounded-full absolute left-0 bottom-0 -rotate-45 -translate-x-1/4 translate-y-1/4 bg-[url('/src/assets/pacman.png')] bg-cover bg-center z-10"
-    >
-    <span id="pacman-text" class="opacity-0 rotate-45 font-family-vt323 group-hover:opacity-100 absolute -right-20 text-primary-black text-body-l duration-200">Click me pls</span>
+<button id="pacman" class="group block w-[120px] h-[120px] rounded-full absolute left-0 bottom-0 -translate-x-1/4 translate-y-1/4 bg-cover bg-center z-50 focus:outline-none" >
+    <span id="pacman-text" class="font-family-vt323 group-hover:opacity-0 absolute -top-5 -right-10 text-primary-black text-body-l duration-200">Click me pls</span>
 </button>
 
 <script>
-    import { gameOn } from '../../store'
+import { gameOn } from '../../store'
+import pacmanImage from '../../assets/pacman.png'
+import pacmanRightImage from '../../assets/pacman-right.png'
+import pacmanLeftImage from '../../assets/pacman-left.png'
+import pacmanUpImage from '../../assets/pacman-up.png'
+import pacmanDownImage from '../../assets/pacman-down.png'
+import pacmanRightUpImage from '../../assets/pacman-right-up.png'
+import pacmanRightDownImage from '../../assets/pacman-right-down.png'
+import pacmanLeftUpImage from '../../assets/pacman-left-up.png'
+import pacmanLeftDownImage from '../../assets/pacman-left-down.png'
+import explosionImage from '../../assets/explosion.webp'
     
-    const clickMeText = document.getElementById('pacman-text')
-    clickMeText?.addEventListener('click', () => {
+    const pacman = document.getElementById('pacman')
+    const pacmanOriginalPosition = {
+        x: 0,
+        y: 0
+    }
+
+    const pacmanText = document.getElementById('pacman-text')
+    pacman?.addEventListener('click', () => {
+        if(gameOn.get()) return
         gameOn.set(true)
+        pacmanText?.classList.add('hidden')
     })
+
+    const SPEED = 10
+
+    const pacmanPosition = {
+        x: 0,
+        y: 0
+    }
+
+    let lastSpriteState = '' // Track last sprite to prevent blinking
+    let needsSpriteUpdate = false // Flag to check if sprite needs updating
+
+    // Preload all sprites to prevent loading delays
+    const spriteCache = new Map()
+    const spriteAssets = {
+        default: pacmanImage.src,
+        right: pacmanRightImage.src,
+        left: pacmanLeftImage.src,
+        up: pacmanUpImage.src,
+        down: pacmanDownImage.src,
+        rightUp: pacmanRightUpImage.src,
+        rightDown: pacmanRightDownImage.src,
+        leftUp: pacmanLeftUpImage.src,
+        leftDown: pacmanLeftDownImage.src,
+        explosion: explosionImage.src
+    }
+
+    // Preload images using imported assets
+    Object.values(spriteAssets).forEach(assetUrl => {
+        const img = new Image()
+        img.src = assetUrl
+        spriteCache.set(assetUrl, img)
+    })
+
+    const keysState = {
+        left: false,
+        right: false,
+        up: false,
+        down: false
+    }
+
+    let interval: NodeJS.Timeout | null = null
+    let keydownListener: ((e: KeyboardEvent) => void) | null = null
+    let keyupListener: ((e: KeyboardEvent) => void) | null = null
+
+    gameOn.subscribe(value => {
+        if(!pacman) return
+        
+        if(value) {
+            // Game starting - initialize everything
+            pacman.style.rotate = '0deg'
+            pacmanPosition.x = 0
+            pacmanPosition.y = 0
+            lastSpriteState = ''
+            
+            // Reset all key states
+            keysState.left = false
+            keysState.right = false
+            keysState.up = false
+            keysState.down = false
+
+            const EXPLOSION_RADIUS = 20
+
+            // Check pacman position against the viewport using actual on-screen bounds
+            const checkPacmanPosition = () => {
+                const rect = pacman.getBoundingClientRect()
+                if(rect.right < 0) pacmanPosition.x = window.innerWidth - pacman.clientWidth
+                if(rect.left > window.innerWidth) pacmanPosition.x = 0
+                if(rect.bottom < 0) pacmanPosition.y = 0
+                if(rect.top > window.innerHeight) pacmanPosition.y = -(window.innerHeight - pacman.clientHeight)
+            }
+
+            const checkCollisiions = () => {
+                if(!pacman) return
+
+                const elements = Array.from(document.querySelectorAll<HTMLElement>('.explosion-letter'))
+
+                const pacmanRect = pacman.getBoundingClientRect()
+
+                const isOverlapping = (a: DOMRect, b: DOMRect) => {
+                    return !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom)
+                }
+
+                elements.forEach((element) => {
+                    const elementRect = element.getBoundingClientRect()
+                    if(isOverlapping(pacmanRect, elementRect)) {
+                        const explosionImg = new Image()
+                        explosionImg.classList.add('absolute', `w-[${EXPLOSION_RADIUS * 2}px]`, `h-[${EXPLOSION_RADIUS * 2}px]`, 'transition-opacity', 'duration-1000')
+                        explosionImg.src = spriteAssets.explosion
+                        explosionImg.style.top = `${elementRect.top + elementRect.height / 2 - EXPLOSION_RADIUS}px`
+                        explosionImg.style.left = `${elementRect.left + elementRect.width / 2 - EXPLOSION_RADIUS}px`
+                        document.body.appendChild(explosionImg)
+                        requestAnimationFrame(() => { explosionImg.style.opacity = '0' })
+                        setTimeout(() => { explosionImg.remove() }, 1000)
+
+                        element.classList.add('opacity-0', 'exploded')
+                        element.classList.remove('explosion-letter')
+                    }
+                })
+            }
+
+            keydownListener = (e: KeyboardEvent) => {
+                const {key} = e
+                switch (key) {
+                    case 'd':
+                        if(!keysState.right) {
+                            keysState.right = true
+                            needsSpriteUpdate = true
+                        }
+                        break;
+                    case 'a':
+                        if(!keysState.left) {
+                            keysState.left = true
+                            needsSpriteUpdate = true
+                        }
+                        break;
+                    case 'w':
+                        if(!keysState.up) {
+                            keysState.up = true
+                            needsSpriteUpdate = true
+                        }
+                        break;
+                    case 's':
+                        if(!keysState.down) {
+                            keysState.down = true
+                            needsSpriteUpdate = true
+                        }
+                        break;
+                }
+            }
+
+            keyupListener = (e: KeyboardEvent) => {
+                const {key} = e
+                switch (key) {
+                    case 'd':
+                        if(keysState.right) {
+                            keysState.right = false
+                            needsSpriteUpdate = true
+                        }
+                        break;
+                    case 'a':
+                        if(keysState.left) {
+                            keysState.left = false
+                            needsSpriteUpdate = true
+                        }
+                        break;
+                    case 'w':
+                        if(keysState.up) {
+                            keysState.up = false
+                            needsSpriteUpdate = true
+                        }
+                        break;
+                    case 's':
+                        if(keysState.down) {
+                            keysState.down = false
+                            needsSpriteUpdate = true
+                        }
+                        break;
+                }
+            }
+
+            const setPacmanSprite = () => {
+                let newSprite = ''
+                
+                // Determine which sprite should be used
+                if(keysState.right && keysState.up) {
+                    newSprite = spriteAssets.rightUp
+                }
+                else if(keysState.right && keysState.down) {
+                    newSprite = spriteAssets.rightDown
+                }
+                else if(keysState.left && keysState.up) {
+                    newSprite = spriteAssets.leftUp
+                }
+                else if(keysState.left && keysState.down) {
+                    newSprite = spriteAssets.leftDown
+                }
+                // Single directions (only if no diagonal)
+                else if(keysState.right) {
+                    newSprite = spriteAssets.right
+                }
+                else if(keysState.left) {
+                    newSprite = spriteAssets.left
+                }
+                else if(keysState.up) {
+                    newSprite = spriteAssets.up
+                }
+                else if(keysState.down) {
+                    newSprite = spriteAssets.down
+                }
+                
+                // Only update sprite if it actually changed AND sprite is preloaded
+                if(newSprite && newSprite !== lastSpriteState && spriteCache.has(newSprite)) {
+                    pacman.style.backgroundImage = `url('${newSprite}')`
+                    lastSpriteState = newSprite
+                    needsSpriteUpdate = false
+                }
+            }
+
+            const setPacmanPosition = () => {
+                if(keysState.right) {
+                    pacmanPosition.x += SPEED
+                }
+                if(keysState.left) {
+                    pacmanPosition.x -= SPEED
+                }
+                if(keysState.up) {
+                    pacmanPosition.y -= SPEED
+                }
+                if(keysState.down) {
+                    pacmanPosition.y += SPEED
+                }
+            }
+
+            interval = setInterval(() => {
+                // Only update sprite if keys changed
+                if(needsSpriteUpdate) {
+                    setPacmanSprite()
+                }
+                setPacmanPosition()
+                checkPacmanPosition()
+                checkCollisiions()
+                // Apply translation (no more rotation needed)
+                pacman.style.transform = `translateX(${pacmanPosition.x}px) translateY(${pacmanPosition.y}px)`
+            }, 1000/60)
+
+            document.addEventListener('keydown', keydownListener)
+            document.addEventListener('keyup', keyupListener)
+        } else {
+            // Game ending - cleanup everything
+            if(keydownListener) {
+                document.removeEventListener('keydown', keydownListener)
+                keydownListener = null
+            }
+            if(keyupListener) {
+                document.removeEventListener('keyup', keyupListener)
+                keyupListener = null
+            }
+            if(interval) {
+                clearInterval(interval)
+                interval = null
+            }
+            
+            // Reset Pacman to original state
+            pacmanPosition.x = pacmanOriginalPosition.x 
+            pacmanPosition.y = pacmanOriginalPosition.y 
+            lastSpriteState = ''
+            
+            // Reset to original sprite and position
+            pacman.style.backgroundImage = `url('${spriteAssets.rightUp}')`
+            pacman.style.transform = `translateX(${pacmanPosition.x}px) translateY(${pacmanPosition.y}px)`
+            
+            keysState.left = false
+            keysState.right = false
+            keysState.up = false
+            keysState.down = false
+            
+            pacmanText?.classList.remove('hidden')
+            const explodedElements = document.querySelectorAll<HTMLElement>('.exploded')
+            explodedElements.forEach(element => {
+                element.classList.remove('opacity-0', 'exploded')
+                element.classList.add('explosion-letter')
+            })
+        }
+    })
+
 </script>

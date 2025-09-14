@@ -1,6 +1,7 @@
 ---
 import { Quote } from "@lucide/astro";
 import Pacman from "./atoms/Pacman.astro";
+import Controls from "./atoms/Controls.astro";
 const SOFTWARES_EATING_THE_WORLD_URL = "https://a16z.com/why-software-is-eating-the-world/";
 const SOFTWARE = 'software'
 const IS = 'is'
@@ -9,25 +10,26 @@ const THE = 'the'
 const WORLD = 'world'
 ---
 
-<div class="flex w-full h-full items-center justify-center relative overflow-hidden">
+<div id="welcome-container" class="flex w-full h-full items-center justify-center relative overflow-hidden">
     <h1 class="sr-only">Daniel Jimenez Hernandez Portfolio</h1>
     <h2 id="welcome-text" class="text-heading-1 uppercase font-family-epilogue text-center max-w-1/2">
-        <p class="font-family-vt323 text-[8vw] text-left"> { SOFTWARE.split("").map(letter => <span>{letter}</span>) } </p>
+        <p class="font-family-vt323 text-[8vw] text-left"> { SOFTWARE.split("").map(letter => <span class="explosion-letter">{letter}</span>) } </p>
         <p class="text-right">
-            { IS.split("").map(letter => <span>{letter}</span>) }
-            <span class="line-through text-primary-red"> { EATING.split("").map(letter => <span>{letter}</span>) } </span>
+            { IS.split("").map(letter => <span class="explosion-letter">{letter}</span>) }
+            <span class="line-through text-primary-red"> { EATING.split("").map(letter => <span class="explosion-letter">{letter}</span>) } </span>
         </p>
         <p>
-            { THE.split("").map(letter => <span>{letter}</span>) }
-            {WORLD}
-            <span class="inline-block relative">🌎
-    <a class="absolute -top-2 -right-2 block w-fit h-fit" target="_blank" rel="noopener noreferrer" href={SOFTWARES_EATING_THE_WORLD_URL}>
+            { THE.split("").map(letter => <span class="explosion-letter">{letter}</span>) }
+            {WORLD.split("").map(letter => <span class="explosion-letter">{letter}</span>)}
+            <span class="inline-block relative explosion-letter">🌎
+    <a class="absolute -top-2 -right-2 block w-fit h-fit explosion-letter" target="_blank" rel="noopener noreferrer" href={SOFTWARES_EATING_THE_WORLD_URL}>
         <Quote class="hover:scale-110 transition-all duration-200 w-[2vw] text-primary-red"/>
     </a>   
             </span>
         </p>
     </h2>
     <Pacman />
+    <Controls />
 </div>
 
 <script>
