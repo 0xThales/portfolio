@@ -1,0 +1,17 @@
+--- 
+import { type Icon as IconType } from "@lucide/astro";
+
+interface Props {
+    icon: typeof IconType;
+    id?: string;
+    size?: number;
+    class?: string;
+}
+
+const { id, icon: Icon, size = 20, class: className } = Astro.props;
+--- 
+
+
+<button id={id} class={`flex items-center p-[10px] justify-center rounded-[6px] border border-primary-grey hover:bg-primary-grey hover:text-primary-black/60 disabled:bg-primary-grey disabled:cursor-not-allowed ${className}`}>
+    <Icon size={size} />
+</button>

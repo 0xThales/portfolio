@@ -1,0 +1,115 @@
+---
+import Divider from "./atoms/Divider.astro";
+import Button from "./atoms/Button.astro";
+import { ArrowLeft, ArrowRight, Maximize, Minimize } from "@lucide/astro";
+---
+
+<div id="slider" class="border border-primary-grey px-5 py-4 rounded-3xl flex items-center justify-between absolute bottom-10 left-1/2 -translate-x-1/2 z-10 min-w-[500px] shadow-lg">
+    <div class="flex items-center gap-3">
+        <Button id="slider-button-left" icon={ArrowLeft} />
+        <div class="flex items-center gap-3">
+             <div id="dots-container" class="flex items-center gap-1">
+            </div>
+        </div>
+        <Button id="slider-button-right" icon={ArrowRight} />
+    </div>
+    <Divider />
+    <div class="flex items-center gap-3">
+        <Button id="maximize-button" class="expand-button" icon={Maximize} />
+        <Button id="minimize-button" class="expand-button" icon={Minimize} />
+        <span class="text-secondary-grey"><span id="current-page-index" class="inline-block text-right tabular-nums"></span>/
+        <span id="current-max-index" class="inline-block text-right tabular-nums"></span>
+    </span>
+    </div>
+</div>
+
+<script>
+    import { isMaximized, sectionCount } from '../store.js';
+    import { pageIndex } from '../store.js';
+
+    // Slider buttons logic
+    const sliderButtonLeft = document.getElementById('slider-button-left')
+    const sliderButtonRight = document.getElementById('slider-button-right')
+    const currentPageIndex = document.getElementById('current-page-index')
+    const currentMaxIndex = document.getElementById('current-max-index')
+    const doctsContainer = document.getElementById('dots-container')
+
+    // Function to create a dot element
+    function createDot(index: number) {
+        const dot = document.createElement('button')
+        dot.id = String(index)
+        dot.className = 'dot rounded-full w-3 h-3 data-[selected="true"]:bg-primary-black bg-secondary-grey'
+        dot.setAttribute('data-selected', 'false')
+        return dot
+    }
+
+    // Add dots to the dots container
+    sectionCount.subscribe(value => {
+        if(!doctsContainer) return
+        
+        // Clear existing dots
+        doctsContainer.innerHTML = ''
+        
+        // Create new dots
+        for(let i = 0; i < value; i++) {
+            const dot = createDot(i)
+            dot.addEventListener('click', () => {
+                pageIndex.set(i)
+            })
+            doctsContainer.appendChild(dot)
+        }
+        
+        if(currentMaxIndex) currentMaxIndex.textContent = `${value}`
+        
+        // Update dots selection for current page
+        updateDotsSelection()
+    })
+
+    // Function to update dots selection
+    function updateDotsSelection() {
+        const dots = document.querySelectorAll('.dot')
+        dots.forEach(dot => {
+            dot.setAttribute('data-selected', `${dot.id === pageIndex.get().toString()}`)
+        })
+    }
+
+    pageIndex.subscribe(value => {
+        if(currentPageIndex) currentPageIndex.textContent = `${value + 1}`
+        updateDotsSelection()
+
+        if(pageIndex.get() === 0) sliderButtonLeft?.setAttribute('disabled', 'true')
+        else sliderButtonLeft?.removeAttribute('disabled')
+
+        if(pageIndex.get() === sectionCount.get() - 1) sliderButtonRight?.setAttribute('disabled', 'true')
+        else sliderButtonRight?.removeAttribute('disabled')
+    })
+
+
+    sliderButtonLeft?.addEventListener('click', () => {
+        pageIndex.set(pageIndex.get() - 1)
+    })
+    sliderButtonRight?.addEventListener('click', () => {
+        pageIndex.set(pageIndex.get() + 1)
+    })
+
+    // Expand buttons logic
+    const maximizeButton = document.getElementById('maximize-button')
+    const minimizeButton = document.getElementById('minimize-button')
+    const expandButtons = document.querySelectorAll('.expand-button')
+    
+
+    const toggleMaximize = () => {
+        isMaximized.set(!isMaximized.get())
+    }
+
+    isMaximized.subscribe(value => {
+        maximizeButton?.classList.toggle("hidden", value)
+        minimizeButton?.classList.toggle("hidden", !value)
+    })
+            
+    expandButtons.forEach(button => {
+        button.addEventListener('click', toggleMaximize)
+    })
+    
+
+</script>

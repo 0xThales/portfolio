@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-black: #000000;
+  --color-primary-white: #ffffff;
+  --color-primary-grey: #e4e4e4;
+  --color-secondary-grey: #9b9999;
+  --color-whatsapp-green: #25d366;
+  --color-primary-red: #810000;
+
+  --font-family-dm: "DM Sans", sans-serif;
+  --font-family-epilogue: "Epilogue", sans-serif;
+  --font-family-vt323: "VT323", sans-serif;
+
+  /* Custom text utilities */
+  --text-heading-1: 6vw;
+  --text-heading-1--font-weight: bold;
+  --text-heading-1--letter-spacing: -0.02em;
+
+  --text-body-s: 14px;
+  --text-body-s--font-weight: 400;
+
+  --text-body-m: 16px;
+  --text-body-m--font-weight: 400;
+
+  --cursor-custom: url("../assets/cursor.svg") 2 0, auto;
+  --cursor-custom-pointer: url("../assets/pointer.svg") 12 0, pointer;
+  --cursor-custom-text: url("../assets/text.svg") 9 19, text;
+}
+
+@layer base {
+  * {
+    @apply cursor-(--cursor-custom);
+  }
+
+  body {
+    @apply font-family-dm;
+  }
+
+  body a,
+  body a *,
+  body a p,
+  body button,
+  body button *,
+  body input[type="submit"],
+  body input[type="submit"] *,
+  body input[type="button"],
+  body input[type="button"] * {
+    @apply cursor-(--cursor-custom-pointer);
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="url"],
+  input[type="tel"],
+  input[type="number"],
+  textarea,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  span,
+  [contenteditable="true"],
+  [contenteditable=""] {
+    @apply cursor-(--cursor-custom-text);
+  }
+}
