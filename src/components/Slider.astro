@@ -17,8 +17,11 @@ import { ArrowLeft, ArrowRight, Maximize, Minimize } from "@lucide/astro";
     <div class="flex items-center gap-3">
         <Button id="maximize-button" class="expand-button" icon={Maximize} />
         <Button id="minimize-button" class="expand-button" icon={Minimize} />
-        <span class="text-secondary-grey"><span id="current-page-index" class="inline-block text-right tabular-nums"></span>/
-        <span id="current-max-index" class="inline-block text-right tabular-nums"></span>
+        <span class="text-secondary-grey inline-flex w-[4ch] text-right tabular-nums">
+            <span><span id="current-page-index"></span>
+            <span>/</span>
+            <span id="current-max-index"></span>
+        </span>
     </span>
     </div>
 </div>

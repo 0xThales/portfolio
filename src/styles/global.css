@@ -23,6 +23,9 @@
   --text-body-m: 16px;
   --text-body-m--font-weight: 400;
 
+  --text-body-l: 20px;
+  --text-body-m--font-weight: 400;
+
   --cursor-custom: url("../assets/cursor.svg") 2 0, auto;
   --cursor-custom-pointer: url("../assets/pointer.svg") 12 0, pointer;
   --cursor-custom-text: url("../assets/text.svg") 9 19, text;
