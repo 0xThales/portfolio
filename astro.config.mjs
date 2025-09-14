@@ -2,12 +2,17 @@
 import { defineConfig } from "astro/config"
 import tailwindcss from "@tailwindcss/vite"
 
+const SERVER_PORT = 3000
+const SITE_URL = "https://0xThales.github.io"
+const BASE_PATH = "/portfolio"
+const isProduction = process.env.CONTEXT === "production"
+
 // https://astro.build/config
 export default defineConfig({
-  site: "https://0xThales.github.io",
-  base: "/portfolio",
+  site: SITE_URL,
+  base: isProduction ? BASE_PATH : "/",
   server: {
-    port: 3000,
+    port: SERVER_PORT,
   },
   vite: {
     plugins: [tailwindcss()],
