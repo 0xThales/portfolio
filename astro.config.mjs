@@ -5,7 +5,8 @@ import tailwindcss from "@tailwindcss/vite"
 const SERVER_PORT = 3000
 const SITE_URL = "https://0xThales.github.io"
 const BASE_PATH = "/portfolio"
-const isProduction = process.env.CONTEXT === "production"
+const isProduction =
+  process.env.NODE_ENV === "production" || process.env.GITHUB_ACTIONS === "true"
 
 // https://astro.build/config
 export default defineConfig({
