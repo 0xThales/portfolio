@@ -5,6 +5,7 @@ import tailwindcss from "@tailwindcss/vite"
 // https://astro.build/config
 export default defineConfig({
   site: "https://0xThales.github.io",
+  base: "/portfolio",
   server: {
     port: 3000,
   },
