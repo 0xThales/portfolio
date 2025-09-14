@@ -53,12 +53,16 @@ import "../styles/global.css";
 				if(gameOn.get()) gameOn.set(false)
 			},
 			'ArrowRight':  () => {
-				if(pageIndex.get() < sectionCount.get() - 1) pageIndex.set(pageIndex.get() + 1)
-				if(gameOn.get()) gameOn.set(false)
+				if(pageIndex.get() < sectionCount.get() - 1) {
+					pageIndex.set(pageIndex.get() + 1)
+					if(gameOn.get()) gameOn.set(false)
+				}
 			},
 			'ArrowLeft':  () => {
-				if(pageIndex.get() > 0) pageIndex.set(pageIndex.get() + -1)
-				if(gameOn.get()) gameOn.set(false)
+				if(pageIndex.get() > 0) {
+					pageIndex.set(pageIndex.get() + -1)
+					if(gameOn.get()) gameOn.set(false)
+				}
 			}
 		}
 

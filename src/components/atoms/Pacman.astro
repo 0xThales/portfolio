@@ -113,10 +113,16 @@ import explosionImage from '../../assets/explosion.webp'
                     const elementRect = element.getBoundingClientRect()
                     if(isOverlapping(pacmanRect, elementRect)) {
                         const explosionImg = new Image()
-                        explosionImg.classList.add('absolute', `w-[${EXPLOSION_RADIUS * 2}px]`, `h-[${EXPLOSION_RADIUS * 2}px]`, 'transition-opacity', 'duration-1000')
+                        explosionImg.classList.add('transition-opacity', 'duration-1000')
                         explosionImg.src = spriteAssets.explosion
+                        // Position relative to viewport rects
+                        explosionImg.style.position = 'fixed'
                         explosionImg.style.top = `${elementRect.top + elementRect.height / 2 - EXPLOSION_RADIUS}px`
                         explosionImg.style.left = `${elementRect.left + elementRect.width / 2 - EXPLOSION_RADIUS}px`
+                        // Inline dimensions so Tailwind JIT doesn't strip dynamic classes
+                        explosionImg.style.width = `${EXPLOSION_RADIUS * 2}px`
+                        explosionImg.style.height = `${EXPLOSION_RADIUS * 2}px`
+                        explosionImg.style.opacity = '1'
                         document.body.appendChild(explosionImg)
                         requestAnimationFrame(() => { explosionImg.style.opacity = '0' })
                         setTimeout(() => { explosionImg.remove() }, 1000)
