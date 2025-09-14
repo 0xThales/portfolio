@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/vite"
 
 const SERVER_PORT = 3000
 const SITE_URL = "https://0xThales.github.io"
-const BASE_PATH = "/portfolio"
+const BASE_PATH = "/portfolio/"
 const isProduction =
   process.env.NODE_ENV === "production" || process.env.GITHUB_ACTIONS === "true"
 
