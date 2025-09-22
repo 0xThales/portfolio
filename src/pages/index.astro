@@ -1,8 +1,11 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Welcome from '../components/Welcome.astro';
-import Me from '../components/Me.astro';
-import Goof from '../components/Goof.astro';
+import Layout from '@layouts/Layout.astro';
+import Welcome from '@components/views/Welcome.astro';
+import Built from '@components/views/Built.astro';
+import Currently from '@components/views/Currently.astro';
+import Me from '@components/views/Me.astro';
+import Projects from '@components/views/Projects.astro';
+import Random from '@components/views/Random.astro';
 
 const commonClasses = "main-section contents"
 ---
@@ -10,7 +13,10 @@ const commonClasses = "main-section contents"
 <Layout>
 	<section class={commonClasses} id="0"><Welcome /></section>
 	<section class={commonClasses} id="1"><Me /></section>
-	<section class={commonClasses} id="2"><Goof /></section>
+  <section class={commonClasses} id="2"><Built /></section>
+	<section class={commonClasses} id="3"><Currently /></section>
+	<section class={commonClasses} id="4"><Projects /></section>
+	<section class={commonClasses} id="5"><Random /></section>
 </Layout>
 
 <script>

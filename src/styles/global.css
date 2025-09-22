@@ -17,6 +17,10 @@
   --text-heading-1--font-weight: bold;
   --text-heading-1--letter-spacing: -0.02em;
 
+  --text-heading-2: 4vw;
+  --text-heading-2--font-weight: bold;
+  --text-heading-2--letter-spacing: -0.02em;
+
   --text-body-s: 14px;
   --text-body-s--font-weight: 400;
 
@@ -24,6 +28,9 @@
   --text-body-m--font-weight: 400;
 
   --text-body-l: 20px;
+  --text-body-m--font-weight: 400;
+
+  --text-body-xxxl: 40px;
   --text-body-m--font-weight: 400;
 
   --cursor-custom: url("../assets/cursor.svg") 2 0, auto;
