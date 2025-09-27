@@ -12,18 +12,18 @@ const WORLD = 'world'
 
 <div id="welcome-container" class="flex w-full h-full items-center justify-center relative overflow-hidden">
     <h1 class="sr-only">Daniel Jimenez Hernandez Portfolio</h1>
-    <h2 id="welcome-text" class="text-heading-1 uppercase font-family-epilogue text-center max-w-1/2">
-        <p class="font-family-vt323 text-[8vw] text-left"> { SOFTWARE.split("").map(letter => <span class="explosion-letter">{letter}</span>) } </p>
+    <h2 id="welcome-text" class="text-heading-1 max-sm:text-[7vw] uppercase font-family-epilogue text-center max-w-1/2 sm:max-w-1/2 max-sm:max-w-[90%] max-sm:px-4 max-sm:space-y-2 sm:space-y-0">
+        <p class="font-family-vt323 text-[8vw] max-sm:text-[13vw] text-left"> { SOFTWARE.split("").map(letter => <span class="explosion-letter">{letter}</span>) } </p>
         <p class="text-right">
             { IS.split("").map(letter => <span class="explosion-letter">{letter}</span>) }
             <span class="line-through text-primary-red"> { EATING.split("").map(letter => <span class="explosion-letter">{letter}</span>) } </span>
         </p>
-        <p>
+        <p class="relative">
             { THE.split("").map(letter => <span class="explosion-letter">{letter}</span>) }
             {WORLD.split("").map(letter => <span class="explosion-letter">{letter}</span>)}
-            <span class="inline-block relative explosion-letter">🌎
-    <a class="absolute -top-2 -right-2 block w-fit h-fit explosion-letter" target="_blank" rel="noopener noreferrer" href={SOFTWARES_EATING_THE_WORLD_URL}>
-        <Quote class="hover:scale-110 transition-all duration-200 w-[2vw] text-primary-red"/>
+            <span class="inline-block relative explosion-letter max-sm:text-[1.2em] max-sm:mr-8 sm:mr-0">🌎
+    <a class="absolute max-sm:-top-1 max-sm:-right-6 sm:-top-2 sm:-right-2 block w-fit h-fit explosion-letter" target="_blank" rel="noopener noreferrer" href={SOFTWARES_EATING_THE_WORLD_URL}>
+        <Quote class="hover:scale-110 transition-all duration-200 w-[2vw] max-sm:w-[4vw] text-primary-red"/>
     </a>   
             </span>
         </p>
@@ -31,12 +31,3 @@ const WORLD = 'world'
     <Pacman />
     <Controls />
 </div>
-
-<script>
-    const welcomeText = document.getElementById('welcome-text')
-    const slider = document.getElementById('slider')
-    if(slider && welcomeText) {
-        const sliderHeight = slider.offsetHeight
-        welcomeText.style.marginBottom = `${sliderHeight}px`
-    }
-</script>

@@ -1,5 +1,6 @@
 ---
 import Slide from "@layouts/Slide.astro";
+import SlideHeader from "@atoms/SlideHeader.astro";
 import { Image } from "astro:assets";
 import { LINKS } from "@constants/index";
 
@@ -14,23 +15,16 @@ const projects = [
 ---
 
 <Slide>
-    <h2 class="text-heading-2 font-family-epilogue">Projects</h2>
-    <p class="text-body-xxxl font-family-dm">Cool projects I'm working on</p>
-    <div class="flex max-sm:flex-col justify-center items-center gap-8 mx-auto">
+    <SlideHeader title="Projects" subtitle="Cool projects I'm working on" />
+    <div class="flex max-sm:flex-col justify-center items-center gap-8 max-sm:gap-6 mx-auto max-sm:mt-10">
         {projects.map(({image, link, name}) => (
             <a 
-                class="flex-1 max-w-xs group overflow-hidden" 
+                class="flex-1 max-w-xs max-sm:max-w-[250px] group max-sm:w-full" 
                 href={link} 
                 target="_blank" 
                 rel="noopener noreferrer"
             >
-                <div class="overflow-hidden bg-white">
-                    <Image 
-                        src={image} 
-                        alt={name}
-                        class="w-full h-auto group-hover:scale-110 transition-transform duration-300 ease-out"
-                    />
-                </div>
+            <Image src={image} alt={name} class="w-full h-auto max-sm:h-[180px] max-sm:object-cover group-hover:scale-110 transition-transform duration-300 ease-out" />
             </a>
         ))}
     </div>

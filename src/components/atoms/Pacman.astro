@@ -1,5 +1,5 @@
-<button id="pacman" class="group block w-[120px] h-[120px] rounded-full absolute left-0 bottom-0 -translate-x-1/4 translate-y-1/4 bg-cover bg-center z-50 focus:outline-none" >
-    <span id="pacman-text" class="font-family-vt323 group-hover:opacity-0 absolute -top-5 -right-10 text-primary-black text-body-l duration-200">Click me pls</span>
+<button id="pacman" class="group block max-sm:w-[60px] max-sm:h-[60px] w-[120px] h-[120px] rounded-full absolute max-sm:top-40 max-sm:-left-4 max-sm:translate-x-0 max-sm:translate-y-0 left-0 bottom-0 -translate-x-1/4 translate-y-1/4 bg-cover bg-center z-50 focus:outline-none" >
+    <span id="pacman-text" class="font-family-vt323 group-hover:opacity-0 absolute -top-5 -right-10 text-primary-black max-sm:text-body-s text-body-l duration-200">Click me pls</span>
 </button>
 
 <script>
@@ -297,5 +297,19 @@ import explosionImage from '../../assets/explosion.webp'
             })
         }
     })
+
+    // Set initial sprite based on screen size
+    const setInitialSprite = () => {
+        if(!pacman) return
+        const isMobile = window.innerWidth < 640 // sm breakpoint
+        const initialSprite = isMobile ? spriteAssets.right : spriteAssets.rightUp
+        pacman.style.backgroundImage = `url('${initialSprite}')`
+    }
+
+    // Set initial sprite on load
+    setInitialSprite()
+
+    // Update sprite on resize
+    window.addEventListener('resize', setInitialSprite)
 
 </script>

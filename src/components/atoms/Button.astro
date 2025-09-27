@@ -8,10 +8,10 @@ interface Props {
     class?: string;
 }
 
-const { id, icon: Icon, size = 20, class: className } = Astro.props;
+const { id, icon: Icon, size = 16, class: className } = Astro.props;
 --- 
 
 
-<button id={id} class={`flex items-center p-[10px] justify-center rounded-[6px] border border-primary-grey hover:bg-primary-grey hover:text-primary-black/60 disabled:bg-primary-grey disabled:cursor-not-allowed ${className}`}>
-    <Icon size={size} />
+<button id={id} class={`flex items-center max-sm:p-1.5 p-[10px] justify-center rounded-[6px] border border-primary-grey hover:bg-primary-grey hover:text-primary-black/60 disabled:bg-primary-grey disabled:cursor-not-allowed ${className}`}>
+    <Icon size={size}/>
 </button>

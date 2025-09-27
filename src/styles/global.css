@@ -21,6 +21,14 @@
   --text-heading-2--font-weight: bold;
   --text-heading-2--letter-spacing: -0.02em;
 
+  /* Mobile-responsive heading */
+  --text-heading-2-mobile: 8vw;
+  --text-heading-2-mobile--font-weight: bold;
+  --text-heading-2-mobile--letter-spacing: -0.02em;
+
+  --text-body-xs: 12px;
+  --text-body-xs--font-weight: 400;
+
   --text-body-s: 14px;
   --text-body-s--font-weight: 400;
 
@@ -28,10 +36,20 @@
   --text-body-m--font-weight: 400;
 
   --text-body-l: 20px;
-  --text-body-m--font-weight: 400;
+  --text-body-l--font-weight: 400;
+
+  --text-body-xl: 24px;
+  --text-body-xl--font-weight: 400;
+
+  --text-body-xxl: 32px;
+  --text-body-xxl--font-weight: 400;
 
   --text-body-xxxl: 40px;
-  --text-body-m--font-weight: 400;
+  --text-body-xxxl--font-weight: 400;
+
+  /* Mobile-responsive subtitle */
+  --text-subtitle-mobile: 18px;
+  --text-subtitle-mobile--font-weight: 400;
 
   --cursor-custom: url("../assets/cursor.svg") 2 0, auto;
   --cursor-custom-pointer: url("../assets/pointer.svg") 12 0, pointer;

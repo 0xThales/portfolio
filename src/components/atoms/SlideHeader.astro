@@ -1,0 +1,15 @@
+---
+export interface Props {
+    title: string;
+    subtitle?: string;
+}
+
+const { title, subtitle } = Astro.props;
+---
+
+<div class="slide-header">
+    <h2 class="text-heading-2 max-sm:text-heading-2-mobile font-family-epilogue">{title}</h2>
+    {subtitle && (
+        <p class="text-body-xxxl max-sm:text-subtitle-mobile font-family-dm mt-2">{subtitle}</p>
+    )}
+</div>
