@@ -8,7 +8,8 @@
       "@pages/*": ["./src/pages/*"],
       "@views/*": ["./src/components/views/*"],
       "@atoms/*": ["./src/components/atoms/*"],
-      "@store/*": ["./src/store/*"]
+      "@store/*": ["./src/store/*"],
+      "@constants/*": ["./src/constants/*"]
     }
   },
   "extends": "astro/tsconfigs/strict",

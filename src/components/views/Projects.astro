@@ -1,17 +1,37 @@
 ---
 import Slide from "@layouts/Slide.astro";
 import { Image } from "astro:assets";
-import type { ImageMetadata } from "astro";
-const projects = Object.values(import.meta.glob<ImageMetadata>('@assets/projects/*.{png,svg,jpg,jpeg,webp}', { eager: true, import: 'default' }));
+import { LINKS } from "@constants/index";
 
+// Direct imports using relative paths from src/assets
+import victhechefImage from "@assets/projects/victhechef.webp";
+import paceonImage from "@assets/projects/paceon.webp";
+
+const projects = [
+    { image: victhechefImage, link: LINKS[0], name: "VicTheChef" },
+    { image: paceonImage, link: LINKS[1], name: "Paceon" },
+];
 ---
 
 <Slide>
     <h2 class="text-heading-2 font-family-epilogue">Projects</h2>
     <p class="text-body-xxxl font-family-dm">Cool projects I'm working on</p>
-    <div class="flex items-center gap-4">
-        {projects.map((project) => (
-            <Image src={project} alt="Project" />
+    <div class="flex max-sm:flex-col justify-center items-center gap-8 mx-auto">
+        {projects.map(({image, link, name}) => (
+            <a 
+                class="flex-1 max-w-xs group overflow-hidden" 
+                href={link} 
+                target="_blank" 
+                rel="noopener noreferrer"
+            >
+                <div class="overflow-hidden bg-white">
+                    <Image 
+                        src={image} 
+                        alt={name}
+                        class="w-full h-auto group-hover:scale-110 transition-transform duration-300 ease-out"
+                    />
+                </div>
+            </a>
         ))}
     </div>
 </Slide>
