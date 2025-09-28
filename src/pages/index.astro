@@ -11,16 +11,16 @@ const commonClasses = "main-section contents"
 ---
 
 <Layout>
+	<section class={`${commonClasses}`} id="0"><Random /></section>
   <section class={commonClasses} id="0"><Welcome /></section>
 	<section class={`${commonClasses} hidden`} id="1"><Me /></section>
   <section class={`${commonClasses} hidden`} id="2"><Built /></section>
 	<section class={`${commonClasses} hidden`} id="3"><Currently /></section>
-	<section class={`${commonClasses} hidden`} id="4"><Random /></section>
 	<section class={`${commonClasses} hidden`} id="5"><Projects /></section>
 </Layout>
 
 <script>
-  import { pageIndex, sectionCount } from '../store.js';
+  import { pageIndex, sectionCount } from '../store.ts';
   const mainSections = document.querySelectorAll('.main-section')
   
   sectionCount.set(mainSections.length)

@@ -2,7 +2,7 @@
 const icons = Object.values(import.meta.glob("@assets/tech/*.{svg}", { eager: true, import: 'default' }));
 ---
 
-<canvas id="canvas-container" class="max-sm:hidden w-[400px] h-[400px] absolute -bottom-20 z-10"></canvas>
+<canvas id="canvas-container" class="w-[400px] h-[400px] absolute -bottom-20 z-10"></canvas>
 
 <script>
   import * as THREE from 'three';
@@ -31,7 +31,7 @@ const icons = Object.values(import.meta.glob("@assets/tech/*.{svg}", { eager: tr
 
   // Sphere + lights
   const geometry = new THREE.SphereGeometry(20, 64, 32);
-  const material = new THREE.MeshStandardMaterial({ color: 'transparent', roughness: 0.4, metalness: 0.1 });
+  const material = new THREE.MeshStandardMaterial({ color: 'black', roughness: 0.4, metalness: 0.1 });
   const sphere = new THREE.Mesh(geometry, material);
   
   scene.add(new THREE.AmbientLight(0xffffff, 0.6));
