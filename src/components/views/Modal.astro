@@ -1,93 +1,87 @@
 ---
-import { X, Minus, Square } from "@lucide/astro"
+import { X } from "@lucide/astro"
+import { Image } from "astro:assets"
 
-const HEADER_COLORS = [
-    { color: "bg-sunset-orange", icon: X },
-    // { color: "bg-pastel-orange", icon: Minus }, 
-    // { color: "bg-malachite", icon: Square }
-]
+import mimImage from "../../assets/random/mim.webp"
+import leagueImage from "../../assets/random/league.webp"
+import penguImage from "../../assets/random/pengu.webp"
+import nothingImage from "../../assets/random/nothing.webp"
+import memeImage from "../../assets/random/meme.webp"
+import maxImage from "../../assets/random/max.webp"
+
+const contentData = {
+    mim: {
+        image: mimImage,
+        title: "Trader at night",
+        description: "I love spending some time trading Magic Internet Money.\nStarted my journey winning 6 figures and giving 80% of it back to the markets."
+    },
+    league: {
+        image: leagueImage, 
+        title: "Top 1% League by age 16",
+        description: "You gotta be proud of this shit. Have not played since.\nI would play nonstop (12+ hours a day), this taught me obsession\nI would watch streams of the best players in the world to improve\nNo joke I think this lowkey transferred into Software.\nPromised my duo I would stop playing once we reached diamond.\nNever looked back."
+    },
+    pengu: {
+        image: penguImage,
+        title: "Web3 Degen",
+        description: "Love this space, crypto twitter and the whole culture.\nHuge Pudgy Penguins fan.\nStill think web3 will contribute enormously to the future of the internet."
+    },
+    nothing: {
+        image: nothingImage,
+        title: "Studied Philosophy",
+        description: "Was a very precocious writer/reader as a kid.\nWon a bunch of essay competitions by age 18.\nFell in love with Philosophy.\nDecided to undertake the degree in 3 years."
+    },
+    meme: {
+        image: memeImage,
+        title: "Meme connoisseur",
+        description: "I have spent way too much time scrolling through memes.\nSeriously, my meme folder has like 10,000+ images.\nProbably know every format that's ever existed.\n\n- The bread must be obtained. (Saint Thomas Aquinas)"
+    },
+    max: {
+        image: maxImage,
+        title: "Max Planck PhD (?)",
+        description: "Invited over to Max Planck to defend my PhD idea by age 20.\nCogniSci/Philosophy thesis (neurophenomenology)\nI would have spent 7 years of my life here.\nThis was my dream. Until it wasn't.\nWittgenstein made me realize my thesis and the whole field made very little sense.\nThe people there did not really enjoy the thesis (ofc, lol).\nThanks to Wittgenstein, Norman Malcolm, and Peter Hacker I started a new career as a Software Engineer."
+    }
+}
 ---
 
 <div id="random-modal" class="fixed hidden inset-0 z-50 bg-primary-white max-sm:pt-16 max-sm:px-4 max-sm:pb-6 p-[100px] max-sm:overflow-y-auto">
     <header class="fixed top-6 left-6 flex items-center gap-2">
-        {HEADER_COLORS.map(({color, icon: Icon}) => (
-            <button class={`w-[14px] h-[14px] group rounded-full ${color} cursor-pointer flex items-center justify-center`}>
-                <Icon size={10} class="text-primary-black hidden group-hover:block" />
-            </button>
-        ))}
+        <button class={`w-[14px] h-[14px] group rounded-full bg-sunset-orange cursor-pointer flex items-center justify-center`}> <X size={10} class="text-primary-black hidden group-hover:block" /> </button>
     </header>
 
-    <section class="max-sm:flex-col flex gap-8 justify-center items-center sm:h-full">
-        <div class="sm:flex-1">
-            <img id="modal-image" src="" alt="random" class="w-full h-auto rounded-xl max-w-md" />
-        </div>
-        <div class="flex flex-col gap-4 sm:flex-1">
-            <h2 id="modal-title" class="text-heading-2 font-family-epilogue"></h2>
-            <p id="modal-description" class="text-body-m font-family-dm whitespace-pre-line"></p>
-        </div>
-    </section>
+    {Object.entries(contentData).map(([id, content]) => (
+        <section id={`modal-content-${id}`} class="modal-content max-sm:flex-col gap-8 justify-center items-center sm:h-full hidden">
+            <div class="sm:flex-1">
+                <Image src={content.image} alt={content.title} class="w-full h-auto rounded-xl max-w-md" />
+            </div>
+            <div class="flex flex-col gap-4 sm:flex-1">
+                <h2 class="text-heading-2 font-family-epilogue">{content.title}</h2>
+                <p class="text-body-m font-family-dm whitespace-pre-line">{content.description}</p>
+            </div>
+        </section>
+    ))}
 </div>
 
 
 <script>
-    import { modalContentId } from "../../store"
-    
-    const baseUrl = import.meta.env.BASE_URL
-    
-    const contentDictionary: Record<string, { image: string; title: string; description: string }> = {
-        mim: {
-            image: `${baseUrl}src/assets/random/mim.webp`,
-            title: "Trader at night",
-            description: "I love spending some time trading Magic Internet Money.\nStarted my journey winning 6 figures and giving 80% of it back to the markets."
-        },
-        league: {
-            image: `${baseUrl}src/assets/random/league.webp`, 
-            title: "Top 1% League by age 16",
-            description: "You gotta be proud of this shit. Have not played since.\nI would play nonstop (12+ hours a day), this taught me obsession\nI would watch streams of the best players in the world to improve\nNo joke I think this lowkey transferred into Software.\nPromised my duo I would stop playing once we reached diamond.\nNever looked back."
-        },
-        pengu: {
-            image: `${baseUrl}src/assets/random/pengu.webp`,
-            title: "Web3 Degen",
-            description: "Love this space, crypto twitter and the whole culture.\nHuge Pudgy Penguins fan.\nStill think web3 will contribute enormously to the future of the internet."
-        },
-        nothing: {
-            image: `${baseUrl}src/assets/random/nothing.webp`,
-            title: "Studied Philosophy",
-            description: "Was a very precocious writer/reader as a kid.\nWon a bunch of essay competitions by age 18.\nFell in love with Philosophy.\nDecided to undertake the degree in 3 years."
-        },
-        meme: {
-            image: `${baseUrl}src/assets/random/meme.webp`,
-            title: "Meme connoisseur",
-            description: "I have spent way too much time scrolling through memes.\nSeriously, my meme folder has like 10,000+ images.\nProbably know every format that's ever existed.\n\n- The bread must be obtained. (Saint Thomas Aquinas)"
-        },
-        max: {
-            image: `${baseUrl}src/assets/random/max.webp`,
-            title: "Max Planck PhD (?)",
-            description: "Invited over to Max Planck to defend my PhD idea by age 20.\nCogniSci/Philosophy thesis (neurophenomenology)\nI would have spent 7 years of my life here.\nThis was my dream. Until it wasn't.\nWittgenstein made me realize my thesis and the whole field made very little sense.\nThe people there did not really enjoy the thesis (ofc, lol).\nThanks to Wittgenstein, Norman Malcolm, and Peter Hacker I started a new career as a Software Engineer."
-        }
-    }
+    import { modalContentId } from "../../store.ts"
 
     // Get DOM elements
     const modal = document.getElementById('random-modal') 
-    const modalImage = document.getElementById('modal-image')
-    const modalTitle = document.getElementById('modal-title') 
-    const modalDescription = document.getElementById('modal-description') 
-    
-    // Get header close buttons (the colored circles)
     const headerButtons = document.querySelectorAll('header button')
 
     // Subscribe to store changes
-    modalContentId.subscribe((value: string | null) => {
-        if (value && contentDictionary[value]) {
-            const content = contentDictionary[value]
-            
-            // Update modal content
-            if (modalImage && modalImage instanceof HTMLImageElement) {
-                modalImage.src = content.image
-                modalImage.alt = content.title
+    modalContentId.subscribe((value: string) => {
+        // Hide all content sections first
+        const allSections = document.querySelectorAll('.modal-content')
+        allSections.forEach(section => section.classList.add('hidden'))
+        
+        if (value) {
+            // Show the selected content section
+            const selectedSection = document.getElementById(`modal-content-${value}`)
+            if (selectedSection) {
+                selectedSection.classList.remove('hidden')
+                selectedSection.classList.add('flex')
             }
-            if (modalTitle) modalTitle.textContent = content.title
-            if (modalDescription) modalDescription.textContent = content.description
             
             // Show modal
             modal?.classList.remove('hidden')
