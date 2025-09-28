@@ -67,7 +67,8 @@ import explosionImage from '../../assets/explosion.webp'
         down: false
     }
 
-    let interval: NodeJS.Timeout | null = null
+    let animationFrameId: number | null = null
+    let lastTime: number | null = null
     let keydownListener: ((e: KeyboardEvent) => void) | null = null
     let keyupListener: ((e: KeyboardEvent) => void) | null = null
 
@@ -231,32 +232,40 @@ import explosionImage from '../../assets/explosion.webp'
                 }
             }
 
-            const setPacmanPosition = () => {
+            const setPacmanPosition = (frameScale: number = 1) => {
                 if(keysState.right) {
-                    pacmanPosition.x += SPEED
+                    pacmanPosition.x += SPEED * frameScale
                 }
                 if(keysState.left) {
-                    pacmanPosition.x -= SPEED
+                    pacmanPosition.x -= SPEED * frameScale
                 }
                 if(keysState.up) {
-                    pacmanPosition.y -= SPEED
+                    pacmanPosition.y -= SPEED * frameScale
                 }
                 if(keysState.down) {
-                    pacmanPosition.y += SPEED
+                    pacmanPosition.y += SPEED * frameScale
                 }
             }
 
-            interval = setInterval(() => {
+            lastTime = null
+            const loop = (time: number) => {
                 // Only update sprite if keys changed
                 if(needsSpriteUpdate) {
                     setPacmanSprite()
                 }
-                setPacmanPosition()
+                const previousTime = lastTime ?? time
+                const delta = time - previousTime
+                lastTime = time
+                const frameScale = delta / (1000 / 60)
+
+                setPacmanPosition(frameScale)
                 checkPacmanPosition()
                 checkCollisiions()
                 // Apply translation (no more rotation needed)
                 pacman.style.transform = `translateX(${pacmanPosition.x}px) translateY(${pacmanPosition.y}px)`
-            }, 1000/60)
+                animationFrameId = requestAnimationFrame(loop)
+            }
+            animationFrameId = requestAnimationFrame(loop)
 
             document.addEventListener('keydown', keydownListener)
             document.addEventListener('keyup', keyupListener)
@@ -270,10 +279,11 @@ import explosionImage from '../../assets/explosion.webp'
                 document.removeEventListener('keyup', keyupListener)
                 keyupListener = null
             }
-            if(interval) {
-                clearInterval(interval)
-                interval = null
+            if(animationFrameId !== null) {
+                cancelAnimationFrame(animationFrameId)
+                animationFrameId = null
             }
+            lastTime = null
             
             // Reset Pacman to original state
             pacmanPosition.x = pacmanOriginalPosition.x 

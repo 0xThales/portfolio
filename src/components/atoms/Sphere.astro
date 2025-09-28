@@ -1,0 +1,52 @@
+---
+const icons = import.meta.glob("@assets/tech/*.{svg}", { eager: true, import: 'default' });
+---
+
+<canvas id="canvas-container" class="w-[400px] h-[400px] absolute z-10"></canvas>
+
+<script>
+  import * as THREE from 'three';
+  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+  const canvas = document.getElementById('canvas-container');
+
+  const setSphere = () => {
+  if(!canvas) return;
+  // Scene
+  const scene = new THREE.Scene();
+
+  // Camera
+  const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+  camera.position.z = 50;
+
+  // Size sync
+  const { clientWidth: w, clientHeight: h } = canvas;
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+
+  // Controls
+  const controls = new OrbitControls( camera, renderer.domElement );
+
+  // Sphere + lights
+  const geometry = new THREE.SphereGeometry(20, 64, 32);
+  const material = new THREE.MeshStandardMaterial({ color: 'transparent', roughness: 0.4, metalness: 0.1 });
+  const sphere = new THREE.Mesh(geometry, material);
+  
+  scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+  const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+  dirLight.position.set(2, 3, 4);
+  scene.add(dirLight);
+  scene.add(sphere);
+
+  // Single loop
+  renderer.setAnimationLoop(() => {
+    controls.update();
+    renderer.render(scene, camera);
+  });
+}
+
+setSphere();
+
+</script>

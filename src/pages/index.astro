@@ -11,12 +11,12 @@ const commonClasses = "main-section contents"
 ---
 
 <Layout>
-  <section class={commonClasses} id="1"><Welcome /></section>
-	<section class={commonClasses} id="1"><Me /></section>
-  <section class={commonClasses} id="2"><Built /></section>
-	<section class={commonClasses} id="3"><Currently /></section>
-	<section class={commonClasses} id="4"><Projects /></section>
-	<section class={commonClasses} id="5"><Random /></section>
+  <section class={commonClasses} id="0"><Welcome /></section>
+	<section class={`${commonClasses}`} id="1"><Me /></section>
+  <section class={`${commonClasses} hidden`} id="2"><Built /></section>
+	<section class={`${commonClasses} hidden`} id="3"><Currently /></section>
+	<section class={`${commonClasses} hidden`} id="4"><Random /></section>
+	<section class={`${commonClasses} hidden`} id="5"><Projects /></section>
 </Layout>
 
 <script>
@@ -25,10 +25,15 @@ const commonClasses = "main-section contents"
   
   sectionCount.set(mainSections.length)
   
-  pageIndex.subscribe(value => {
+  // Function to update section visibility
+  const updateSectionVisibility = (value: number) => {
     mainSections.forEach(section => {
       section.classList.toggle("hidden", value !== +section.id)
     })
-  })
+  }
+  
+  pageIndex.subscribe(updateSectionVisibility)
+  
+  updateSectionVisibility(pageIndex.get())
 
 </script>

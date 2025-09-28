@@ -1,8 +1,64 @@
 ---
 import Slide from "@layouts/Slide.astro";
 import SlideHeader from "@atoms/SlideHeader.astro";
+import Image from "astro/components/Image.astro";
+import iqBellDistribution from "@assets/random/iq.webp";
+
+import meme from "@assets/random/meme.webp";
+import max from "@assets/random/max.webp";
+import league from "@assets/random/league.webp";
+import pengu from "@assets/random/pengu.webp";
+import mim from "@assets/random/mim.webp";
+import nothing from "@assets/random/nothing.webp";
+import Modal from "./Modal.astro";
+
+const commonButtonClass = `absolute cursor-pointer animate-float modal-toggler-btn outline-none`
+
+const imageData = [
+    // Top row
+    { src: mim, alt: "mim", classes: `${commonButtonClass} -translate-x-1/2 -translate-y-full left-[30%] top-[20%]`, id: "mim" },
+    { src: league, alt: "league", classes: `${commonButtonClass} -translate-x-1/2 -translate-y-full left-[70%] top-[20%]`, id: "league" },
+
+    // Middle row
+    { src: pengu, alt: "pengu", classes: `${commonButtonClass} -translate-x-1/2 -translate-y-1/2 left-[20%] top-1/2`, id: "pengu" },
+    { src: nothing, alt: "nothing", classes: `${commonButtonClass} -translate-x-1/2 -translate-y-1/2 left-[80%] top-1/2`, id: "nothing" },
+    
+    // Bottom row
+    { src: meme, alt: "the bread must be obtained", classes: `${commonButtonClass} left-0 bottom-0 -translate-x-1/2`, id: "meme" },
+    { src: max, alt: "max", classes: `${commonButtonClass} right-0 bottom-0 translate-x-1/2`, id: "max" },
+];
 ---
 
 <Slide>
-    <SlideHeader title="Random" />
+    <SlideHeader title="About me" subtitle="My IQ bell distribution" />
+
+    <div class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        <div class="relative">
+            <Image src={iqBellDistribution} alt="iq bell distribution" class="w-full max-w-4xl" />
+            
+            {imageData.map((image) => (
+                <button class={image.classes} id={image.id}>
+                    <Image 
+                        src={image.src} 
+                        alt={image.alt} 
+                        class="max-sm:w-10 max-sm:h-10 w-24 h-24 rounded-full hover:scale-110 transition-scale duration-300" 
+                    />
+                </button>
+            ))}
+        </div>
+    </div>
 </Slide>
+
+<Modal />
+
+<script>
+    import { modalContentId } from "../../store"
+
+    const modalTogglers = document.querySelectorAll('.modal-toggler-btn')
+    modalTogglers.forEach(button => {
+        button.addEventListener('click', () => {
+            const id = button.id
+            modalContentId.set(id)
+        })
+    })
+</script>

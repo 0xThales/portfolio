@@ -3,7 +3,7 @@ import Image from "astro/components/Image.astro";
 import linkedinImage from "../assets/linkedin.webp";
 ---
 
-<footer class="flex items-center gap-1 absolute bottom-6 right-6">
+<footer class="flex items-center gap-1 absolute bottom-6 right-6 max-sm:bg-white/60 max-sm:backdrop-blur-sm max-sm:px-3 max-sm:py-1 max-sm:rounded">
     <p class="text-secondary-grey max-sm:text-body-xs text-body-s">© {new Date().getFullYear()} Made by <a class="inline-flex items-center gap-1 underline underline-offset-2" href="https://www.linkedin.com/in/dan-jimenez-dev" target="_blank" rel="noopener noreferrer"><span class="hover:text-primary-black">Daniel Jimenez</span>
     <Image class="w-6 h-6 rounded-full" src={linkedinImage} alt="LinkedIn" width={710} height={710} quality={10} />
     </a></p>

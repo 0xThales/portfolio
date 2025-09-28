@@ -34,7 +34,7 @@ import "../styles/global.css";
 </html>
 
 <script>
-	import {isMaximized, pageIndex, sectionCount, gameOn} from '../store.ts'
+	import {isMaximized, pageIndex, sectionCount, gameOn, modalContentId} from '../store.ts'
 	const mainFrame = document.getElementById('main-frame') 
 	const mainFrameContent = document.getElementById('main-frame-content')
 	isMaximized.subscribe(value => {
@@ -43,6 +43,11 @@ import "../styles/global.css";
 	})
 
 	document.addEventListener('keydown', (e) => {
+		const isModalOpen = modalContentId.get() !== ""
+		
+		if(isModalOpen) return // Don't navigate if modal is open
+
+		
 		const keys = {
 			'f': () => isMaximized.set(!isMaximized.get()),
 			'Escape': () => {

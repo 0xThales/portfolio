@@ -1,8 +1,29 @@
 ---
 import Slide from "@layouts/Slide.astro";
 import SlideHeader from "@atoms/SlideHeader.astro";
+import Sphere from "@atoms/Sphere.astro";
+import Image from "astro/components/Image.astro";
+import cat from "@assets/me/cat.webp";
+import me from "@assets/me/me.webp";
+import vr from "@assets/me/vr.webp";
+const images = [me, vr,cat];
 ---
 
 <Slide>
-    <SlideHeader title="Me" />
+    <SlideHeader title="Me"/>
+    
+    <div class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        <div class="relative flex items-center gap-4 justify-center w-[70%] mx-auto max-h-[600px]">
+            {images.map((image, index) => (
+                <div class="flex-1 flex justify-center">
+                    <Image 
+                        src={image} 
+                        alt="Me" 
+                        class={`min-w-[250px] h-[500px] object-cover rounded-lg ${index === 1 && "mb-20"}`}
+                    />
+                </div>
+            ))}
+        <Sphere />
+        </div>
+    </div>
 </Slide>

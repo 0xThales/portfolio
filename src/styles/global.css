@@ -8,6 +8,10 @@
   --color-whatsapp-green: #25d366;
   --color-primary-red: #810000;
 
+  --color-sunset-orange: #ff605c;
+  --color-pastel-orange: #ffbd44;
+  --color-malachite: #00ca4e;
+
   --font-family-dm: "DM Sans", sans-serif;
   --font-family-epilogue: "Epilogue", sans-serif;
   --font-family-vt323: "VT323", sans-serif;
@@ -54,6 +58,17 @@
   --cursor-custom: url("../assets/cursor.svg") 2 0, auto;
   --cursor-custom-pointer: url("../assets/pointer.svg") 12 0, pointer;
   --cursor-custom-text: url("../assets/text.svg") 9 19, text;
+
+  --animate-float: float 3s ease-in-out infinite;
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
 }
 
 @layer base {
