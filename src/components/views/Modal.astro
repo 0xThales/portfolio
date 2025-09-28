@@ -8,7 +8,7 @@ const HEADER_COLORS = [
 ]
 ---
 
-<div id="random-modal" class="fixed hidden inset-0 z-50 bg-primary-white max-sm:p-4 p-[100px]">
+<div id="random-modal" class="fixed hidden inset-0 z-50 bg-primary-white max-sm:pt-16 max-sm:px-4 max-sm:pb-6 p-[100px] max-sm:overflow-y-auto">
     <header class="fixed top-6 left-6 flex items-center gap-2">
         {HEADER_COLORS.map(({color, icon: Icon}) => (
             <button class={`w-[14px] h-[14px] group rounded-full ${color} cursor-pointer flex items-center justify-center`}>
@@ -17,11 +17,11 @@ const HEADER_COLORS = [
         ))}
     </header>
 
-    <section class="max-sm:flex-col flex gap-8 justify-center items-center h-full">
-        <div class="flex-1">
-            <img id="modal-image" src="" alt="random" class="w-full h-auto rounded-xl max-w-md mx-auto" />
+    <section class="max-sm:flex-col flex gap-8 justify-center items-center sm:h-full">
+        <div class="sm:flex-1">
+            <img id="modal-image" src="" alt="random" class="w-full h-auto rounded-xl max-w-md" />
         </div>
-        <div class="flex flex-col gap-4 flex-1">
+        <div class="flex flex-col gap-4 sm:flex-1">
             <h2 id="modal-title" class="text-heading-2 font-family-epilogue"></h2>
             <p id="modal-description" class="text-body-m font-family-dm whitespace-pre-line"></p>
         </div>
@@ -41,7 +41,7 @@ const HEADER_COLORS = [
         league: {
             image: "/src/assets/random/league.webp", 
             title: "Top 1% League by age 16",
-            description: "You gotta be proud of this shit. Have not played since.\nADC 4ever. Draven/Vayne main.\nI would play nonstop (12+ hours a day), this taught me obsession\nI would watch streams of the best players in the world to improve\nNo joke I think this lowkey transferred into Software.\nPromised my duo I would stop playing once we reached diamond.\nNever looked back."
+            description: "You gotta be proud of this shit. Have not played since.\nI would play nonstop (12+ hours a day), this taught me obsession\nI would watch streams of the best players in the world to improve\nNo joke I think this lowkey transferred into Software.\nPromised my duo I would stop playing once we reached diamond.\nNever looked back."
         },
         pengu: {
             image: "/src/assets/random/pengu.webp",

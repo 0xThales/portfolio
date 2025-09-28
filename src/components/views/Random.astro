@@ -24,8 +24,8 @@ const imageData = [
     { src: nothing, alt: "nothing", classes: `${commonButtonClass} -translate-x-1/2 -translate-y-1/2 left-[80%] top-1/2`, id: "nothing" },
     
     // Bottom row
-    { src: meme, alt: "the bread must be obtained", classes: `${commonButtonClass} left-0 bottom-0 -translate-x-1/2`, id: "meme" },
-    { src: max, alt: "max", classes: `${commonButtonClass} right-0 bottom-0 translate-x-1/2`, id: "max" },
+    { src: meme, alt: "the bread must be obtained", classes: `${commonButtonClass} left-1 bottom-0 -translate-x-1/2`, id: "meme" },
+    { src: max, alt: "max", classes: `${commonButtonClass} right-1 bottom-0 translate-x-1/2`, id: "max" },
 ];
 ---
 
@@ -34,7 +34,7 @@ const imageData = [
 
     <div class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
         <div class="relative">
-            <Image src={iqBellDistribution} alt="iq bell distribution" class="w-full max-w-4xl" />
+            <Image src={iqBellDistribution} alt="iq bell distribution" class="max-sm:w-xs w-full max-w-4xl" />
             
             {imageData.map((image) => (
                 <button class={image.classes} id={image.id}>

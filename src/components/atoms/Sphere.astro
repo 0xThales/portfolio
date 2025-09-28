@@ -1,8 +1,8 @@
 ---
-const icons = import.meta.glob("@assets/tech/*.{svg}", { eager: true, import: 'default' });
+const icons = Object.values(import.meta.glob("@assets/tech/*.{svg}", { eager: true, import: 'default' }));
 ---
 
-<canvas id="canvas-container" class="w-[400px] h-[400px] absolute z-10"></canvas>
+<canvas id="canvas-container" class="max-sm:hidden w-[400px] h-[400px] absolute -bottom-20 z-10"></canvas>
 
 <script>
   import * as THREE from 'three';
