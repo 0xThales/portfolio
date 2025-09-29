@@ -44,6 +44,14 @@ const iconSrcs = icons.map(icon => icon.src);
   const setSphere = async () => {
     if (!canvas) return;
 
+    // Wait for canvas to have non-zero dimensions
+    const { clientWidth: w, clientHeight: h } = canvas;
+    if (w === 0 || h === 0) {
+      console.warn('Canvas has zero dimensions, retrying...');
+      requestAnimationFrame(() => setSphere());
+      return;
+    }
+
     // Scene
     const scene = new THREE.Scene();
 
@@ -52,7 +60,6 @@ const iconSrcs = icons.map(icon => icon.src);
     camera.position.z = 50;
 
     // Size sync
-    const { clientWidth: w, clientHeight: h } = canvas;
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(w, h, false);
