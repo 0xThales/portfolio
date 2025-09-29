@@ -1,52 +1,305 @@
 ---
-const icons = Object.values(import.meta.glob("@assets/tech/*.{svg}", { eager: true, import: 'default' }));
+// Import all tech icons
+import astroIcon from "@assets/tech/astro.svg";
+import bunIcon from "@assets/tech/bun.svg";
+import figmaIcon from "@assets/tech/figma.svg";
+import nextIcon from "@assets/tech/next.svg";
+import nodeIcon from "@assets/tech/node.svg";
+import postgresIcon from "@assets/tech/postgres.svg";
+import reactIcon from "@assets/tech/react.svg";
+import storybookIcon from "@assets/tech/storybook.svg";
+import supabaseIcon from "@assets/tech/supabase.svg";
+import tailwindIcon from "@assets/tech/tailwind.svg";
+import tsIcon from "@assets/tech/ts.svg";
+
+const icons = [
+  astroIcon,
+  bunIcon,
+  figmaIcon,
+  nextIcon,
+  nodeIcon,
+  postgresIcon,
+  reactIcon,
+  storybookIcon,
+  supabaseIcon,
+  tailwindIcon,
+  tsIcon
+];
+
+// Extract src property from image metadata
+const iconSrcs = icons.map(icon => icon.src);
 ---
 
-<canvas id="canvas-container" class="w-[400px] h-[400px] absolute -bottom-20 z-10"></canvas>
+<canvas id="canvas-container" class="w-[500px] h-[500px] absolute -bottom-20 z-10" data-icons={JSON.stringify(iconSrcs)}></canvas>
 
 <script>
   import * as THREE from 'three';
   import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-  const canvas = document.getElementById('canvas-container');
 
-  const setSphere = () => {
-  if(!canvas) return;
-  // Scene
-  const scene = new THREE.Scene();
+  const canvas = document.getElementById('canvas-container') as HTMLCanvasElement | null;
 
-  // Camera
-  const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
-  camera.position.z = 50;
+  // Get icons from data attribute
+  const icons: string[] = canvas ? JSON.parse(canvas.dataset.icons || '[]') : [];
 
-  // Size sync
-  const { clientWidth: w, clientHeight: h } = canvas;
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setSize(w, h, false);
-  camera.aspect = w / h;
-  camera.updateProjectionMatrix();
+  const setSphere = async () => {
+    if (!canvas) return;
 
-  // Controls
-  const controls = new OrbitControls( camera, renderer.domElement );
+    // Scene
+    const scene = new THREE.Scene();
 
-  // Sphere + lights
-  const geometry = new THREE.SphereGeometry(20, 64, 32);
-  const material = new THREE.MeshStandardMaterial({ color: 'black', roughness: 0.4, metalness: 0.1 });
-  const sphere = new THREE.Mesh(geometry, material);
-  
-  scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-  const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-  dirLight.position.set(2, 3, 4);
-  scene.add(dirLight);
-  scene.add(sphere);
+    // Camera
+    const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+    camera.position.z = 50;
 
-  // Single loop
-  renderer.setAnimationLoop(() => {
-    controls.update();
-    renderer.render(scene, camera);
-  });
-}
+    // Size sync
+    const { clientWidth: w, clientHeight: h } = canvas;
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
 
-setSphere();
+    // Controls
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.5;
 
+    // Change cursor to grabbing when dragging
+    controls.addEventListener('start', () => {
+      canvas.style.cursor = 'grabbing';
+      canvas.style.cursor = 'var(--cursor-custom-grabbing)';
+    });
+
+    controls.addEventListener('end', () => {
+      canvas.style.cursor = 'grab';
+      canvas.style.cursor = 'var(--cursor-custom-grab)';
+    });
+
+    // Glassy sphere with better visibility
+    const geometry = new THREE.SphereGeometry(20, 64, 64);
+
+    // Create a more spatial, glass-like material
+    const material = new THREE.MeshPhysicalMaterial({
+      color: 0x2a2a2a,
+      transparent: true,
+      opacity: 0.25,
+      metalness: 0.2,
+      roughness: 0.05,
+      transmission: 0.7,
+      thickness: 0.8,
+      envMapIntensity: 1.5,
+      clearcoat: 1,
+      clearcoatRoughness: 0.05,
+      reflectivity: 0.8,
+    });
+
+    const sphere = new THREE.Mesh(geometry, material);
+    scene.add(sphere);
+
+    // Add subtle wireframe overlay for structure
+    const wireframeGeometry = new THREE.SphereGeometry(20.05, 24, 24);
+    const wireframeMaterial = new THREE.MeshBasicMaterial({
+      color: 0x666666,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.2,
+    });
+    const wireframeSphere = new THREE.Mesh(wireframeGeometry, wireframeMaterial);
+    scene.add(wireframeSphere);
+
+    // Add futuristic glow halo effect
+    const glowGeometry = new THREE.SphereGeometry(20.8, 32, 32);
+    const glowMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        glowColor: { value: new THREE.Color(0x4488ff) },
+        viewVector: { value: camera.position }
+      },
+      vertexShader: `
+        uniform vec3 viewVector;
+        varying float intensity;
+        void main() {
+          vec3 vNormal = normalize(normalMatrix * normal);
+          vec3 vNormel = normalize(normalMatrix * viewVector);
+          intensity = pow(0.7 - dot(vNormal, vNormel), 3.0);
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 glowColor;
+        varying float intensity;
+        void main() {
+          vec3 glow = glowColor * intensity;
+          gl_FragColor = vec4(glow, intensity * 0.5);
+        }
+      `,
+      side: THREE.BackSide,
+      blending: THREE.AdditiveBlending,
+      transparent: true
+    });
+    const glowSphere = new THREE.Mesh(glowGeometry, glowMaterial);
+    scene.add(glowSphere);
+
+    // Add inner glow
+    const innerGlowGeometry = new THREE.SphereGeometry(19.5, 32, 32);
+    const innerGlowMaterial = new THREE.MeshBasicMaterial({
+      color: 0x2266ff,
+      transparent: true,
+      opacity: 0.08,
+      side: THREE.BackSide
+    });
+    const innerGlowSphere = new THREE.Mesh(innerGlowGeometry, innerGlowMaterial);
+    scene.add(innerGlowSphere);
+
+    // Lights - enhanced for better 3D appearance
+    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+    const dirLight1 = new THREE.DirectionalLight(0xffffff, 1);
+    dirLight1.position.set(5, 5, 5);
+    scene.add(dirLight1);
+
+    const dirLight2 = new THREE.DirectionalLight(0x4488ff, 0.3);
+    dirLight2.position.set(-5, -5, -5);
+    scene.add(dirLight2);
+
+    const dirLight3 = new THREE.DirectionalLight(0xffffff, 0.5);
+    dirLight3.position.set(0, 10, 0);
+    scene.add(dirLight3);
+
+    // Load and distribute icons on sphere surface
+    const iconMeshes: THREE.Mesh[] = [];
+    const radius = 21; // Slightly larger than sphere radius
+
+    // Fibonacci sphere distribution for even spacing
+    const goldenRatio = (1 + Math.sqrt(5)) / 2;
+    const angleIncrement = Math.PI * 2 * goldenRatio;
+
+    // Load icons using Image element first, then convert to canvas texture
+    const loadIconAsTexture = async (iconUrl: string): Promise<THREE.Texture | null> => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+
+        img.onload = () => {
+          // Create canvas to render the image with transparency
+          const canvas = document.createElement('canvas');
+          const size = 512;
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext('2d', { alpha: true });
+
+          if (ctx) {
+            // Clear with transparent background
+            ctx.clearRect(0, 0, size, size);
+
+            // Draw image centered
+            const imgSize = size * 0.85;
+            const offset = (size - imgSize) / 2;
+            ctx.drawImage(img, offset, offset, imgSize, imgSize);
+
+            // Create texture from canvas
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.needsUpdate = true;
+            texture.minFilter = THREE.LinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+            resolve(texture);
+          } else {
+            resolve(null);
+          }
+        };
+
+        img.onerror = (error) => {
+          console.warn(`Failed to load icon: ${iconUrl}`, error);
+          resolve(null);
+        };
+
+        img.src = iconUrl;
+      });
+    };
+
+    for (let i = 0; i < icons.length; i++) {
+      const texture = await loadIconAsTexture(icons[i]);
+
+      if (!texture) continue;
+
+      // Use simple plane geometry for clean SVG display
+      const planeGeometry = new THREE.PlaneGeometry(6, 6);
+
+      // Simple material with just the texture
+      const material = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        alphaTest: 0.1
+      });
+
+      const iconMesh = new THREE.Mesh(planeGeometry, material);
+
+      // Fibonacci sphere distribution
+      const t = i / icons.length;
+      const inclination = Math.acos(1 - 2 * t);
+      const azimuth = angleIncrement * i;
+
+      // Convert to Cartesian coordinates
+      const x = radius * Math.sin(inclination) * Math.cos(azimuth);
+      const y = radius * Math.sin(inclination) * Math.sin(azimuth);
+      const z = radius * Math.cos(inclination);
+
+      iconMesh.position.set(x, y, z);
+
+      // Make icon face outward from sphere center
+      iconMesh.lookAt(new THREE.Vector3(0, 0, 0));
+      iconMesh.rotateY(Math.PI);
+
+      scene.add(iconMesh);
+      iconMeshes.push(iconMesh);
+    }
+
+    // Subtle hover effect with scale only
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    let hoveredMesh: THREE.Mesh | null = null;
+    const originalScales = new Map<THREE.Mesh, THREE.Vector3>();
+
+    // Store original scales
+    iconMeshes.forEach(mesh => {
+      originalScales.set(mesh, mesh.scale.clone());
+    });
+
+    const onMouseMove = (event: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(iconMeshes);
+
+      // Reset previous hover
+      if (hoveredMesh) {
+        const originalScale = originalScales.get(hoveredMesh);
+        if (originalScale) {
+          hoveredMesh.scale.copy(originalScale);
+        }
+      }
+
+      // Apply subtle scale on hover
+      if (intersects.length > 0) {
+        hoveredMesh = intersects[0].object as THREE.Mesh;
+        hoveredMesh.scale.multiplyScalar(1.15);
+      } else {
+        hoveredMesh = null;
+      }
+    };
+
+    canvas.addEventListener('mousemove', onMouseMove);
+
+    // Animation loop
+    renderer.setAnimationLoop(() => {
+      controls.update();
+      renderer.render(scene, camera);
+    });
+  };
+
+  setSphere();
 </script>

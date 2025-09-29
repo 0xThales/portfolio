@@ -58,6 +58,8 @@
   --cursor-custom: url("../assets/cursor.svg") 2 0, auto;
   --cursor-custom-pointer: url("../assets/pointer.svg") 12 0, pointer;
   --cursor-custom-text: url("../assets/text.svg") 9 19, text;
+  --cursor-custom-grab: url("../assets/hand.svg") 12 0, grab;
+  --cursor-custom-grabbing: url("../assets/grabbing.svg") 12 0, grabbing;
 
   --animate-float: float 3s ease-in-out infinite;
   @keyframes float {
@@ -78,6 +80,14 @@
 
   body {
     @apply font-family-dm;
+  }
+
+  #canvas-container {
+    @apply cursor-(--cursor-custom-grab);
+  }
+
+  #canvas-container * {
+    @apply cursor-(--cursor-custom-grabbing);
   }
 
   body a,
