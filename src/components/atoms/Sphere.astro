@@ -66,7 +66,7 @@ const iconSrcs = icons.map(icon => icon.src);
 
     // Dark sphere
     const sphere = new THREE.Mesh(
-      new THREE.SphereGeometry(20, 64, 64),
+      new THREE.SphereGeometry(20, 32, 32),
       new THREE.MeshPhysicalMaterial({
         color: 0x0a0a0a,
         transparent: true,
@@ -191,9 +191,9 @@ const iconSrcs = icons.map(icon => icon.src);
       });
     };
 
-    for (let i = 0; i < icons.length; i++) {
-      const texture = await loadIcon(icons[i]);
-      if (!texture) continue;
+    const iconPromises = icons.map(async (iconUrl, i) => {
+      const texture = await loadIcon(iconUrl);
+      if (!texture) return null;
 
       const iconMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(6, 6),
@@ -217,9 +217,16 @@ const iconSrcs = icons.map(icon => icon.src);
       iconMesh.lookAt(0, 0, 0);
       iconMesh.rotateY(Math.PI);
 
-      scene.add(iconMesh);
-      iconMeshes.push(iconMesh);
-    }
+      return iconMesh;
+    });
+
+    const loadedMeshes = await Promise.all(iconPromises);
+    loadedMeshes.forEach(mesh => {
+      if (mesh) {
+        scene.add(mesh);
+        iconMeshes.push(mesh);
+      }
+    });
 
     // Icon hover effect
     const raycaster = new THREE.Raycaster();
