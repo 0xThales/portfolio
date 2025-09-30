@@ -86,7 +86,7 @@
     @apply cursor-(--cursor-custom-grab);
   }
 
-  #canvas-container * {
+  #canvas-container *:hover {
     @apply cursor-(--cursor-custom-grabbing);
   }
 

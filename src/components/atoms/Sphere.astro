@@ -37,244 +37,196 @@ const iconSrcs = icons.map(icon => icon.src);
   import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
   const canvas = document.getElementById('canvas-container') as HTMLCanvasElement | null;
-
-  // Get icons from data attribute
   const icons: string[] = canvas ? JSON.parse(canvas.dataset.icons || '[]') : [];
 
   const setSphere = async () => {
     if (!canvas) return;
 
-    // Wait for canvas to have non-zero dimensions
     const { clientWidth: w, clientHeight: h } = canvas;
     if (w === 0 || h === 0) {
-      console.warn('Canvas has zero dimensions, retrying...');
       requestAnimationFrame(() => setSphere());
       return;
     }
 
-    // Scene
     const scene = new THREE.Scene();
-
-    // Camera
-    const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
     camera.position.z = 50;
 
-    // Size sync
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(w, h, false);
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
 
-    // Controls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
     controls.autoRotate = true;
     controls.autoRotateSpeed = 0.5;
+    controls.addEventListener('start', () => canvas.style.cursor = 'var(--cursor-custom-grabbing)');
+    controls.addEventListener('end', () => canvas.style.cursor = 'var(--cursor-custom-grab)');
 
-    // Change cursor to grabbing when dragging
-    controls.addEventListener('start', () => {
-      canvas.style.cursor = 'grabbing';
-      canvas.style.cursor = 'var(--cursor-custom-grabbing)';
-    });
-
-    controls.addEventListener('end', () => {
-      canvas.style.cursor = 'grab';
-      canvas.style.cursor = 'var(--cursor-custom-grab)';
-    });
-
-    // Glassy sphere with better visibility
-    const geometry = new THREE.SphereGeometry(20, 64, 64);
-
-    // Create a more spatial, glass-like material
-    const material = new THREE.MeshPhysicalMaterial({
-      color: 0x2a2a2a,
-      transparent: true,
-      opacity: 0.25,
-      metalness: 0.2,
-      roughness: 0.05,
-      transmission: 0.7,
-      thickness: 0.8,
-      envMapIntensity: 1.5,
-      clearcoat: 1,
-      clearcoatRoughness: 0.05,
-      reflectivity: 0.8,
-    });
-
-    const sphere = new THREE.Mesh(geometry, material);
+    // Dark sphere
+    const sphere = new THREE.Mesh(
+      new THREE.SphereGeometry(20, 64, 64),
+      new THREE.MeshPhysicalMaterial({
+        color: 0x0a0a0a,
+        transparent: true,
+        opacity: 0.2,
+        metalness: 0.1,
+        roughness: 0.6,
+        transmission: 0.75,
+        thickness: 0.5,
+        envMapIntensity: 0.8,
+        clearcoat: 0.3,
+        clearcoatRoughness: 0.4,
+        reflectivity: 0.5,
+      })
+    );
     scene.add(sphere);
 
-    // Add subtle wireframe overlay for structure
-    const wireframeGeometry = new THREE.SphereGeometry(20.05, 24, 24);
-    const wireframeMaterial = new THREE.MeshBasicMaterial({
-      color: 0x666666,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.2,
-    });
-    const wireframeSphere = new THREE.Mesh(wireframeGeometry, wireframeMaterial);
-    scene.add(wireframeSphere);
+    // White star particles
+    const particleCount = 200;
+    const positions = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount; i++) {
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(Math.random() * 2 - 1);
+      const r = 20.5 + Math.random() * 2;
+      positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+      positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+      positions[i * 3 + 2] = r * Math.cos(phi);
+    }
+    const particleGeometry = new THREE.BufferGeometry();
+    particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const particles = new THREE.Points(
+      particleGeometry,
+      new THREE.PointsMaterial({
+        color: 0xffffff,
+        size: 0.15,
+        transparent: true,
+        opacity: 0.4,
+        blending: THREE.AdditiveBlending
+      })
+    );
+    scene.add(particles);
 
-    // Add futuristic glow halo effect
-    const glowGeometry = new THREE.SphereGeometry(20.8, 32, 32);
-    const glowMaterial = new THREE.ShaderMaterial({
-      uniforms: {
-        glowColor: { value: new THREE.Color(0x4488ff) },
-        viewVector: { value: camera.position }
-      },
-      vertexShader: `
-        uniform vec3 viewVector;
-        varying float intensity;
-        void main() {
-          vec3 vNormal = normalize(normalMatrix * normal);
-          vec3 vNormel = normalize(normalMatrix * viewVector);
-          intensity = pow(0.7 - dot(vNormal, vNormel), 3.0);
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        uniform vec3 glowColor;
-        varying float intensity;
-        void main() {
-          vec3 glow = glowColor * intensity;
-          gl_FragColor = vec4(glow, intensity * 0.5);
-        }
-      `,
-      side: THREE.BackSide,
-      blending: THREE.AdditiveBlending,
-      transparent: true
-    });
-    const glowSphere = new THREE.Mesh(glowGeometry, glowMaterial);
+    // White outer glow
+    const glowSphere = new THREE.Mesh(
+      new THREE.SphereGeometry(25, 32, 32),
+      new THREE.ShaderMaterial({
+        uniforms: {
+          glowColor: { value: new THREE.Color(0xffffff) },
+          viewVector: { value: camera.position }
+        },
+        vertexShader: `
+          uniform vec3 viewVector;
+          varying float intensity;
+          void main() {
+            vec3 vNormal = normalize(normalMatrix * normal);
+            vec3 vNormel = normalize(normalMatrix * viewVector);
+            intensity = pow(0.7 - dot(vNormal, vNormel), 3.0);
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform vec3 glowColor;
+          varying float intensity;
+          void main() {
+            vec3 glow = glowColor * intensity;
+            gl_FragColor = vec4(glow, intensity * 0.5);
+          }
+        `,
+        side: THREE.BackSide,
+        blending: THREE.AdditiveBlending,
+        transparent: true
+      })
+    );
     scene.add(glowSphere);
 
-    // Add inner glow
-    const innerGlowGeometry = new THREE.SphereGeometry(19.5, 32, 32);
-    const innerGlowMaterial = new THREE.MeshBasicMaterial({
-      color: 0x2266ff,
-      transparent: true,
-      opacity: 0.08,
-      side: THREE.BackSide
-    });
-    const innerGlowSphere = new THREE.Mesh(innerGlowGeometry, innerGlowMaterial);
-    scene.add(innerGlowSphere);
+    // Dark inner glow
+    const innerGlow = new THREE.Mesh(
+      new THREE.SphereGeometry(19.5, 32, 32),
+      new THREE.MeshBasicMaterial({
+        color: 0x1e1b4b,
+        transparent: true,
+        opacity: 0.12,
+        side: THREE.BackSide
+      })
+    );
+    scene.add(innerGlow);
 
-    // Lights - enhanced for better 3D appearance
-    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-    const dirLight1 = new THREE.DirectionalLight(0xffffff, 1);
-    dirLight1.position.set(5, 5, 5);
-    scene.add(dirLight1);
+    // Lighting
+    scene.add(new THREE.AmbientLight(0x1a1a2e, 0.3));
+    const light1 = new THREE.DirectionalLight(0x8b8bb5, 0.6);
+    light1.position.set(5, 5, 5);
+    scene.add(light1);
+    const light2 = new THREE.DirectionalLight(0x4f46e5, 0.3);
+    light2.position.set(-5, -5, -5);
+    scene.add(light2);
+    const light3 = new THREE.DirectionalLight(0xccccff, 0.5);
+    light3.position.set(0, 10, 0);
+    scene.add(light3);
 
-    const dirLight2 = new THREE.DirectionalLight(0x4488ff, 0.3);
-    dirLight2.position.set(-5, -5, -5);
-    scene.add(dirLight2);
-
-    const dirLight3 = new THREE.DirectionalLight(0xffffff, 0.5);
-    dirLight3.position.set(0, 10, 0);
-    scene.add(dirLight3);
-
-    // Load and distribute icons on sphere surface
+    // Tech icons on sphere surface
     const iconMeshes: THREE.Mesh[] = [];
-    const radius = 21; // Slightly larger than sphere radius
-
-    // Fibonacci sphere distribution for even spacing
     const goldenRatio = (1 + Math.sqrt(5)) / 2;
     const angleIncrement = Math.PI * 2 * goldenRatio;
 
-    // Load icons using Image element first, then convert to canvas texture
-    const loadIconAsTexture = async (iconUrl: string): Promise<THREE.Texture | null> => {
+    const loadIcon = (iconUrl: string): Promise<THREE.Texture | null> => {
       return new Promise((resolve) => {
         const img = new Image();
         img.crossOrigin = 'anonymous';
-
         img.onload = () => {
-          // Create canvas to render the image with transparency
           const canvas = document.createElement('canvas');
-          const size = 512;
-          canvas.width = size;
-          canvas.height = size;
+          canvas.width = canvas.height = 512;
           const ctx = canvas.getContext('2d', { alpha: true });
-
           if (ctx) {
-            // Clear with transparent background
-            ctx.clearRect(0, 0, size, size);
-
-            // Draw image centered
-            const imgSize = size * 0.85;
-            const offset = (size - imgSize) / 2;
-            ctx.drawImage(img, offset, offset, imgSize, imgSize);
-
-            // Create texture from canvas
+            ctx.clearRect(0, 0, 512, 512);
+            ctx.drawImage(img, 43, 43, 435, 435);
             const texture = new THREE.CanvasTexture(canvas);
-            texture.needsUpdate = true;
-            texture.minFilter = THREE.LinearFilter;
-            texture.magFilter = THREE.LinearFilter;
+            texture.minFilter = texture.magFilter = THREE.LinearFilter;
             resolve(texture);
-          } else {
-            resolve(null);
-          }
+          } else resolve(null);
         };
-
-        img.onerror = (error) => {
-          console.warn(`Failed to load icon: ${iconUrl}`, error);
-          resolve(null);
-        };
-
+        img.onerror = () => resolve(null);
         img.src = iconUrl;
       });
     };
 
     for (let i = 0; i < icons.length; i++) {
-      const texture = await loadIconAsTexture(icons[i]);
-
+      const texture = await loadIcon(icons[i]);
       if (!texture) continue;
 
-      // Use simple plane geometry for clean SVG display
-      const planeGeometry = new THREE.PlaneGeometry(6, 6);
+      const iconMesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(6, 6),
+        new THREE.MeshBasicMaterial({
+          map: texture,
+          transparent: true,
+          side: THREE.DoubleSide,
+          depthWrite: false,
+          alphaTest: 0.1
+        })
+      );
 
-      // Simple material with just the texture
-      const material = new THREE.MeshBasicMaterial({
-        map: texture,
-        transparent: true,
-        side: THREE.DoubleSide,
-        depthWrite: false,
-        alphaTest: 0.1
-      });
-
-      const iconMesh = new THREE.Mesh(planeGeometry, material);
-
-      // Fibonacci sphere distribution
       const t = i / icons.length;
       const inclination = Math.acos(1 - 2 * t);
       const azimuth = angleIncrement * i;
-
-      // Convert to Cartesian coordinates
-      const x = radius * Math.sin(inclination) * Math.cos(azimuth);
-      const y = radius * Math.sin(inclination) * Math.sin(azimuth);
-      const z = radius * Math.cos(inclination);
+      const x = 21 * Math.sin(inclination) * Math.cos(azimuth);
+      const y = 21 * Math.sin(inclination) * Math.sin(azimuth);
+      const z = 21 * Math.cos(inclination);
 
       iconMesh.position.set(x, y, z);
-
-      // Make icon face outward from sphere center
-      iconMesh.lookAt(new THREE.Vector3(0, 0, 0));
+      iconMesh.lookAt(0, 0, 0);
       iconMesh.rotateY(Math.PI);
 
       scene.add(iconMesh);
       iconMeshes.push(iconMesh);
     }
 
-    // Subtle hover effect with scale only
+    // Icon hover effect
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
-    let hoveredMesh: THREE.Mesh | null = null;
-    const originalScales = new Map<THREE.Mesh, THREE.Vector3>();
+    let hoveredIcon: THREE.Mesh | null = null;
 
-    // Store original scales
-    iconMeshes.forEach(mesh => {
-      originalScales.set(mesh, mesh.scale.clone());
-    });
-
-    const onMouseMove = (event: MouseEvent) => {
+    canvas.addEventListener('mousemove', (event) => {
       const rect = canvas.getBoundingClientRect();
       mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -282,26 +234,11 @@ const iconSrcs = icons.map(icon => icon.src);
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObjects(iconMeshes);
 
-      // Reset previous hover
-      if (hoveredMesh) {
-        const originalScale = originalScales.get(hoveredMesh);
-        if (originalScale) {
-          hoveredMesh.scale.copy(originalScale);
-        }
-      }
+      if (hoveredIcon) hoveredIcon.scale.set(1, 1, 1);
+      hoveredIcon = intersects.length > 0 ? intersects[0].object as THREE.Mesh : null;
+      if (hoveredIcon) hoveredIcon.scale.multiplyScalar(1.15);
+    });
 
-      // Apply subtle scale on hover
-      if (intersects.length > 0) {
-        hoveredMesh = intersects[0].object as THREE.Mesh;
-        hoveredMesh.scale.multiplyScalar(1.15);
-      } else {
-        hoveredMesh = null;
-      }
-    };
-
-    canvas.addEventListener('mousemove', onMouseMove);
-
-    // Animation loop
     renderer.setAnimationLoop(() => {
       controls.update();
       renderer.render(scene, camera);
