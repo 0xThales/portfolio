@@ -95,7 +95,7 @@ import explosionImage from '../../assets/explosion.webp'
                 const rect = pacman.getBoundingClientRect()
                 if(rect.right < 0) pacmanPosition.x = window.innerWidth - pacman.clientWidth
                 if(rect.left > window.innerWidth) pacmanPosition.x = 0
-                if(rect.bottom < 0) pacmanPosition.y = 0
+                if(rect.bottom < 0) pacmanPosition.y = window.innerHeight - pacman.clientHeight
                 if(rect.top > window.innerHeight) pacmanPosition.y = -(window.innerHeight - pacman.clientHeight)
             }
 
@@ -258,10 +258,9 @@ import explosionImage from '../../assets/explosion.webp'
 
             lastTime = null
             const loop = (time: number) => {
-                // Only update sprite if keys changed
-                if(needsSpriteUpdate) {
-                    setPacmanSprite()
-                }
+                // Always check sprite state (for both keyboard and knob changes)
+                setPacmanSprite()
+
                 const previousTime = lastTime ?? time
                 const delta = time - previousTime
                 lastTime = time

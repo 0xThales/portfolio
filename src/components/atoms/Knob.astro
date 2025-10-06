@@ -1,10 +1,10 @@
 <div id="knob-container" class="group fixed bottom-24 left-10 z-40 hidden sm:hidden">
-    <div class="relative w-[40px] h-[40px]">
+    <div class="relative w-[80px] h-[80px]">
         <!-- Outer circle base - recessed well -->
         <div class="absolute inset-0 rounded-full bg-primary-grey border-2 border-primary-black" style="box-shadow: inset 2px 2px 4px rgba(0,0,0,0.2), inset -1px -1px 2px rgba(255,255,255,0.5);"></div>
 
         <!-- Inner draggable knob - raised button -->
-        <div id="knob" class="absolute top-1/2 left-1/2 w-[18px] h-[18px] rounded-full bg-primary-black touch-none transition-all duration-100" style="transform: translate(-50%, -50%); box-shadow: 0 2px 3px rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 1px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3);"></div>
+        <div id="knob" class="absolute top-1/2 left-1/2 w-[36px] h-[36px] rounded-full bg-primary-black touch-none transition-all duration-100" style="transform: translate(-50%, -50%); box-shadow: 0 2px 3px rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 1px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3);"></div>
 
         <!-- Helper text -->
         <span class="font-family-vt323 group-active:opacity-0 absolute -top-5 -right-10 text-primary-black text-body-s duration-200 pointer-events-none whitespace-nowrap">Drag me</span>
@@ -20,7 +20,7 @@ const knob = document.getElementById('knob')
 let isDragging = false
 let centerX = 0
 let centerY = 0
-const maxDistance = 18 // Maximum distance from center on mobile (60px container, so ~30% of radius)
+const maxDistance = 30 // Maximum distance from center (80px container, so ~75% of radius)
 
 const updateKnobState = (deltaX: number, deltaY: number) => {
     const threshold = 5 // Minimum distance to trigger direction
