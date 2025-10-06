@@ -1,0 +1,125 @@
+<div id="knob-container" class="group fixed bottom-24 left-10 z-40 hidden sm:hidden">
+    <div class="relative w-[40px] h-[40px]">
+        <!-- Outer circle base - recessed well -->
+        <div class="absolute inset-0 rounded-full bg-primary-grey border-2 border-primary-black" style="box-shadow: inset 2px 2px 4px rgba(0,0,0,0.2), inset -1px -1px 2px rgba(255,255,255,0.5);"></div>
+
+        <!-- Inner draggable knob - raised button -->
+        <div id="knob" class="absolute top-1/2 left-1/2 w-[18px] h-[18px] rounded-full bg-primary-black touch-none transition-all duration-100" style="transform: translate(-50%, -50%); box-shadow: 0 2px 3px rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 1px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3);"></div>
+
+        <!-- Helper text -->
+        <span class="font-family-vt323 group-active:opacity-0 absolute -top-5 -right-10 text-primary-black text-body-s duration-200 pointer-events-none whitespace-nowrap">Drag me</span>
+    </div>
+</div>
+
+<script>
+import { gameOn, knobState } from '../../store.ts'
+
+const knobContainer = document.getElementById('knob-container')
+const knob = document.getElementById('knob')
+
+let isDragging = false
+let centerX = 0
+let centerY = 0
+const maxDistance = 18 // Maximum distance from center on mobile (60px container, so ~30% of radius)
+
+const updateKnobState = (deltaX: number, deltaY: number) => {
+    const threshold = 5 // Minimum distance to trigger direction
+
+    knobState.set({
+        right: deltaX > threshold,
+        left: deltaX < -threshold,
+        down: deltaY > threshold,
+        up: deltaY < -threshold
+    })
+}
+
+const resetKnob = () => {
+    if (!knob) return
+    // Keep the base centering transform
+    knob.style.transform = 'translate(-50%, -50%)'
+    knobState.set({
+        left: false,
+        right: false,
+        up: false,
+        down: false
+    })
+}
+
+const handleStart = (clientX: number, clientY: number) => {
+    if (!gameOn.get() || !knob) return
+
+    isDragging = true
+    const rect = knob.parentElement?.getBoundingClientRect()
+    if (rect) {
+        centerX = rect.left + rect.width / 2
+        centerY = rect.top + rect.height / 2
+    }
+}
+
+const handleMove = (clientX: number, clientY: number) => {
+    if (!isDragging || !knob) return
+
+    const deltaX = clientX - centerX
+    const deltaY = clientY - centerY
+
+    // Calculate distance and constrain to maxDistance
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
+    const constrainedDistance = Math.min(distance, maxDistance)
+
+    // Calculate constrained position
+    const angle = Math.atan2(deltaY, deltaX)
+    const constrainedX = Math.cos(angle) * constrainedDistance
+    const constrainedY = Math.sin(angle) * constrainedDistance
+
+    // Apply movement while maintaining centering
+    knob.style.transform = `translate(calc(-50% + ${constrainedX}px), calc(-50% + ${constrainedY}px))`
+    updateKnobState(constrainedX, constrainedY)
+}
+
+const handleEnd = () => {
+    isDragging = false
+    resetKnob()
+}
+
+// Touch events
+knob?.addEventListener('touchstart', (e) => {
+    e.preventDefault()
+    const touch = e.touches[0]
+    handleStart(touch.clientX, touch.clientY)
+})
+
+knob?.addEventListener('touchmove', (e) => {
+    e.preventDefault()
+    const touch = e.touches[0]
+    handleMove(touch.clientX, touch.clientY)
+})
+
+knob?.addEventListener('touchend', () => {
+    handleEnd()
+})
+
+// Show/hide knob based on game state and screen size
+gameOn.subscribe(value => {
+    if (!knobContainer) return
+
+    const isMobile = window.innerWidth < 640
+    if (value && isMobile) {
+        knobContainer.classList.remove('hidden')
+    } else {
+        knobContainer.classList.add('hidden')
+        resetKnob()
+    }
+})
+
+// Update visibility on resize
+window.addEventListener('resize', () => {
+    if (!knobContainer) return
+
+    const isMobile = window.innerWidth < 640
+    if (gameOn.get() && isMobile) {
+        knobContainer.classList.remove('hidden')
+    } else {
+        knobContainer.classList.add('hidden')
+    }
+})
+</script>

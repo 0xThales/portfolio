@@ -196,34 +196,41 @@ import explosionImage from '../../assets/explosion.webp'
 
             const setPacmanSprite = () => {
                 let newSprite = ''
-                
+
+                // Combine keyboard and knob states
+                const knob = knobState.get()
+                const right = keysState.right || knob.right
+                const left = keysState.left || knob.left
+                const up = keysState.up || knob.up
+                const down = keysState.down || knob.down
+
                 // Determine which sprite should be used
-                if(keysState.right && keysState.up) {
+                if(right && up) {
                     newSprite = spriteAssets.rightUp
                 }
-                else if(keysState.right && keysState.down) {
+                else if(right && down) {
                     newSprite = spriteAssets.rightDown
                 }
-                else if(keysState.left && keysState.up) {
+                else if(left && up) {
                     newSprite = spriteAssets.leftUp
                 }
-                else if(keysState.left && keysState.down) {
+                else if(left && down) {
                     newSprite = spriteAssets.leftDown
                 }
                 // Single directions (only if no diagonal)
-                else if(keysState.right) {
+                else if(right) {
                     newSprite = spriteAssets.right
                 }
-                else if(keysState.left) {
+                else if(left) {
                     newSprite = spriteAssets.left
                 }
-                else if(keysState.up) {
+                else if(up) {
                     newSprite = spriteAssets.up
                 }
-                else if(keysState.down) {
+                else if(down) {
                     newSprite = spriteAssets.down
                 }
-                
+
                 // Only update sprite if it actually changed AND sprite is preloaded
                 if(newSprite && newSprite !== lastSpriteState && spriteCache.has(newSprite)) {
                     pacman.style.backgroundImage = `url('${newSprite}')`
@@ -233,16 +240,18 @@ import explosionImage from '../../assets/explosion.webp'
             }
 
             const setPacmanPosition = (frameScale: number = 1) => {
-                if(keysState.right) {
+                const knob = knobState.get()
+
+                if(keysState.right || knob.right) {
                     pacmanPosition.x += SPEED * frameScale
                 }
-                if(keysState.left) {
+                if(keysState.left || knob.left) {
                     pacmanPosition.x -= SPEED * frameScale
                 }
-                if(keysState.up) {
+                if(keysState.up || knob.up) {
                     pacmanPosition.y -= SPEED * frameScale
                 }
-                if(keysState.down) {
+                if(keysState.down || knob.down) {
                     pacmanPosition.y += SPEED * frameScale
                 }
             }
