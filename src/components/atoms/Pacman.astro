@@ -74,29 +74,51 @@ import explosionImage from '../../assets/explosion.webp'
 
     gameOn.subscribe(value => {
         if(!pacman) return
-        
+
         if(value) {
             // Game starting - initialize everything
             pacman.style.rotate = '0deg'
             pacmanPosition.x = 0
             pacmanPosition.y = 0
             lastSpriteState = ''
-            
+
             // Reset all key states
             keysState.left = false
             keysState.right = false
             keysState.up = false
             keysState.down = false
 
+            // Prevent scrolling on mobile during game
+            document.body.style.overflow = 'hidden'
+            document.body.style.touchAction = 'none'
+
             const EXPLOSION_RADIUS = 20
 
             // Check pacman position against the viewport using actual on-screen bounds
             const checkPacmanPosition = () => {
                 const rect = pacman.getBoundingClientRect()
-                if(rect.right < 0) pacmanPosition.x = window.innerWidth - pacman.clientWidth
-                if(rect.left > window.innerWidth) pacmanPosition.x = 0
-                if(rect.bottom < 0) pacmanPosition.y = window.innerHeight - pacman.clientHeight
-                if(rect.top > window.innerHeight) pacmanPosition.y = -(window.innerHeight - pacman.clientHeight)
+                const pacmanInitialRect = pacman.getBoundingClientRect()
+
+                // Get pacman's initial position (where it starts before any translation)
+                const initialLeft = pacmanInitialRect.left - pacmanPosition.x
+                const initialTop = pacmanInitialRect.top - pacmanPosition.y
+
+                // Right edge wrap to left
+                if(rect.right < 0) {
+                    pacmanPosition.x = window.innerWidth - initialLeft
+                }
+                // Left edge wrap to right
+                if(rect.left > window.innerWidth) {
+                    pacmanPosition.x = -initialLeft - pacman.clientWidth
+                }
+                // Top edge wrap to bottom
+                if(rect.bottom < 0) {
+                    pacmanPosition.y = window.innerHeight - initialTop
+                }
+                // Bottom edge wrap to top
+                if(rect.top > window.innerHeight) {
+                    pacmanPosition.y = -initialTop - pacman.clientHeight
+                }
             }
 
             const checkCollisiions = () => {
@@ -292,21 +314,25 @@ import explosionImage from '../../assets/explosion.webp'
                 animationFrameId = null
             }
             lastTime = null
-            
+
+            // Re-enable scrolling
+            document.body.style.overflow = ''
+            document.body.style.touchAction = ''
+
             // Reset Pacman to original state
-            pacmanPosition.x = pacmanOriginalPosition.x 
-            pacmanPosition.y = pacmanOriginalPosition.y 
+            pacmanPosition.x = pacmanOriginalPosition.x
+            pacmanPosition.y = pacmanOriginalPosition.y
             lastSpriteState = ''
-            
+
             // Reset to original sprite and position
             pacman.style.backgroundImage = `url('${spriteAssets.rightUp}')`
             pacman.style.transform = `translateX(${pacmanPosition.x}px) translateY(${pacmanPosition.y}px)`
-            
+
             keysState.left = false
             keysState.right = false
             keysState.up = false
             keysState.down = false
-            
+
             pacmanText?.classList.remove('hidden')
             const explodedElements = document.querySelectorAll<HTMLElement>('.exploded')
             explodedElements.forEach(element => {
