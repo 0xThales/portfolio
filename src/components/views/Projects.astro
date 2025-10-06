@@ -16,15 +16,15 @@ const projects = [
 
 <Slide>
     <SlideHeader title="Projects" subtitle="Cool projects I'm working on" />
-    <div class="flex max-sm:flex-col justify-center items-center gap-8 max-sm:gap-6 mx-auto max-sm:mt-10">
+    <div class="flex max-sm:flex-col justify-center items-center gap-8 max-sm:gap-6 mx-auto max-sm:mt-6">
         {projects.map(({image, link, name}) => (
-            <a 
-                class="flex-1 max-w-[300px] sm:mt-10 max-sm:max-w-[250px] group max-sm:w-full" 
-                href={link} 
-                target="_blank" 
+            <a
+                class="flex-1 max-sm:w-full max-sm:max-w-[140px] max-w-[300px] sm:mt-10 group"
+                href={link}
+                target="_blank"
                 rel="noopener noreferrer"
             >
-            <Image src={image} alt={name} class="w-full h-auto max-sm:h-[180px] max-sm:object-cover group-hover:scale-110 transition-transform duration-300 ease-out" />
+            <Image src={image} alt={name} class="w-full h-auto group-hover:scale-110 transition-transform duration-300 ease-out" />
             </a>
         ))}
     </div>

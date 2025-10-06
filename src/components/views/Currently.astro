@@ -8,10 +8,10 @@ import Image from "astro/components/Image.astro";
 <Slide>
     <SlideHeader title="Currently" subtitle="Product Lead @ Dcycle" />
     
-    <div class="flex flex-col gap-8 max-w-lg relative">
-        <p class="text-xl font-family-dm">Leading AI product initiatives, frontend architecture, and design systems.</p>
+    <div class="flex flex-col max-sm:gap-4 sm:gap-8 max-w-lg relative">
+        <p class="max-sm:text-m sm:text-xl font-family-dm">Leading AI product initiatives, frontend architecture, and design systems.</p>
         
-        <ul class="text-lg text-gray-600 flex flex-col gap-2 font-family-dm list-disc list-inside">
+        <ul class="max-sm:text-body-m sm:text-lg text-gray-600 flex flex-col gap-2 font-family-dm list-disc list-inside">
             <li>AI Team Product Lead</li>
             <li>Frontend & Design System Lead</li>
             <li>Product Engineer</li>
@@ -20,5 +20,5 @@ import Image from "astro/components/Image.astro";
         </ul>
     </div>
     
-    <Image src={Me} alt="Me" class="max-sm:w-[290px] max-w-[500px] absolute max-sm:bottom-0 max-sm:right-1/2 max-sm:translate-x-1/2 bottom-0 right-20" />
+    <Image src={Me} alt="Me" class="max-sm:w-[190px] max-w-[500px] absolute max-sm:bottom-0 max-sm:right-0 bottom-0 right-20" />
 </Slide>
