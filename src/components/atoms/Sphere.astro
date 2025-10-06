@@ -30,7 +30,7 @@ const icons = [
 const iconSrcs = icons.map(icon => icon.src);
 ---
 
-<canvas id="canvas-container" class="w-[500px] h-[500px] absolute -bottom-20 z-10" data-icons={JSON.stringify(iconSrcs)}></canvas>
+<canvas id="canvas-container" class="w-[500px] h-[500px] max-sm:w-[300px] max-sm:h-[300px] absolute -bottom-20 max-sm:-bottom-10 z-10" data-icons={JSON.stringify(iconSrcs)}></canvas>
 
 <script>
   import * as THREE from 'three';
@@ -61,6 +61,8 @@ const iconSrcs = icons.map(icon => icon.src);
     controls.dampingFactor = 0.05;
     controls.autoRotate = true;
     controls.autoRotateSpeed = 0.5;
+    controls.minDistance = 35;
+    controls.maxDistance = 70;
     controls.addEventListener('start', () => canvas.style.cursor = 'var(--cursor-custom-grabbing)');
     controls.addEventListener('end', () => canvas.style.cursor = 'var(--cursor-custom-grab)');
 
